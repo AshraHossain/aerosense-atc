@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<title>AeroSense ATC — Live Dashboard</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#050a0f;--surface:#0b1520;--surface2:#0f1f2e;--border:#1a3a5c;
+  --accent:#00d4ff;--accent2:#0096cc;--green:#00ff88;--yellow:#ffd700;
+  --red:#ff4444;--orange:#ff8800;--muted:#5a8aaa;--text:#c8e8ff;
+  --radar-bg:#020d12;--font:'Segoe UI',system-ui,sans-serif;--mono:'Cascadia Code','Consolas',monospace;
+}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--font);font-size:13px;overflow:hidden}
+.app{display:flex;flex-direction:column;height:100vh}
+
+/* Header */
+header{display:flex;align-items:center;gap:16px;padding:0 20px;height:48px;
+  background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0}
+.logo{font-size:15px;font-weight:700;letter-spacing:.08em;display:flex;align-items:center;gap:8px}
+.logo-icon{color:var(--accent);font-size:18px}
+.logo span{color:var(--accent)}
+.hdr-badges{display:flex;gap:8px;margin-left:auto}
+.badge{padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;border:1px solid}
+.badge-model{background:#00d4ff18;border-color:#00d4ff44;color:var(--accent)}
+.badge-status{background:#00ff8818;border-color:#00ff8844;color:var(--green)}
+.badge-status.running{background:#ffd70018;border-color:#ffd70044;color:var(--yellow)}
+.badge-status.error{background:#ff444418;border-color:#ff444444;color:var(--red)}
+
+/* Body */
+.body{display:flex;flex:1;overflow:hidden}
+
+/* Left sidebar */
+.sidebar-left{width:200px;flex-shrink:0;display:flex;flex-direction:column;
+  background:var(--surface);border-right:1px solid var(--border);overflow-y:auto}
+.side-section{padding:12px}
+.side-title{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;
+  letter-spacing:.1em;margin-bottom:10px}
+/* Scenario buttons */
+.scn-btn{width:100%;padding:8px 10px;margin-bottom:6px;border-radius:6px;
+  background:var(--surface2);border:1px solid var(--border);color:var(--text);
+  font-size:12px;cursor:pointer;text-align:left;transition:all .15s}
+.scn-btn:hover{border-color:var(--accent);color:var(--accent)}
+.scn-btn.active{border-color:var(--accent);background:#00d4ff18;color:var(--accent)}
+/* Phase list */
+.phase-item{display:flex;align-items:center;gap:8px;padding:5px 0;
+  border-bottom:1px solid #1a3a5c44}
+.phase-num{width:22px;height:22px;border-radius:50%;border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;font-size:10px;
+  font-family:var(--mono);flex-shrink:0;transition:all .3s}
+.phase-num.done{background:#00ff8820;border-color:var(--green);color:var(--green)}
+.phase-num.active{background:#ffd70020;border-color:var(--yellow);color:var(--yellow);animation:pulseborder 1s infinite}
+.phase-num.pending{color:var(--muted)}
+.phase-label{font-size:11px;color:var(--muted);transition:color .3s}
+.phase-label.done{color:var(--text)}
+.phase-label.active{color:var(--yellow)}
+@keyframes pulseborder{0%,100%{box-shadow:0 0 4px var(--yellow)}50%{box-shadow:0 0 10px var(--yellow)}}
+
+/* Radar */
+.radar-wrap{flex:1;display:flex;align-items:center;justify-content:center;
+  background:var(--radar-bg);position:relative;overflow:hidden}
+#radarCanvas{display:block}
+
+/* Right sidebar */
+.sidebar-right{width:280px;flex-shrink:0;display:flex;flex-direction:column;
+  background:var(--surface);border-left:1px solid var(--border);overflow:hidden}
+.tabs{display:flex;border-bottom:1px solid var(--border);flex-shrink:0}
+.tab{flex:1;padding:10px 6px;font-size:11px;font-weight:600;text-align:center;
+  cursor:pointer;color:var(--muted);transition:all .15s;border-bottom:2px solid transparent}
+.tab:hover{color:var(--text)}
+.tab.active{color:var(--accent);border-color:var(--accent)}
+.tab-content{flex:1;overflow-y:auto;padding:10px}
+.tab-pane{display:none}
+.tab-pane.active{display:block}
+
+/* Log items */
+.log-item{padding:8px 0;border-bottom:1px solid #1a3a5c44;font-size:11px;line-height:1.5}
+.log-time{color:var(--muted);font-family:var(--mono);font-size:10px}
+.log-phase{font-weight:600;color:var(--accent);margin-right:4px}
+.log-text{color:var(--text)}
+.log-item.conflict .log-phase{color:var(--red)}
+.log-item.emergency .log-phase{color:var(--orange)}
+.log-item.clearance .log-phase{color:var(--green)}
+.log-item.warning .log-phase{color:var(--yellow)}
+
+/* Clearance cards */
+.clr-card{padding:8px;margin-bottom:6px;border-radius:6px;background:var(--surface2);
+  border-left:3px solid var(--green);font-size:11px}
+.clr-cs{font-weight:700;color:var(--accent);font-family:var(--mono)}
+.clr-instr{color:var(--text);margin-top:3px}
+.clr-reason{color:var(--muted);font-size:10px;margin-top:2px}
+.clr-card.conflict{border-color:var(--red)}
+.clr-card.emergency{border-color:var(--orange)}
+
+/* Stats bar */
+.stats-bar{display:flex;gap:0;flex-shrink:0;border-top:1px solid var(--border);
+  background:var(--surface)}
+.stat-block{flex:1;padding:8px 10px;text-align:center;border-right:1px solid var(--border)}
+.stat-block:last-child{border-right:none}
+.stat-val{font-size:20px;font-weight:700;line-height:1}
+.stat-lbl{font-size:10px;color:var(--muted);margin-top:3px;text-transform:uppercase;letter-spacing:.06em}
+.stat-val.red{color:var(--red)}
+.stat-val.yellow{color:var(--yellow)}
+.stat-val.green{color:var(--green)}
+.stat-val.blue{color:var(--accent)}
+
+/* Controls */
+.controls{padding:10px 12px;border-top:1px solid var(--border);flex-shrink:0;display:flex;gap:8px}
+.btn{padding:7px 14px;border-radius:6px;border:1px solid var(--border);
+  background:var(--surface2);color:var(--text);font-size:12px;font-weight:600;
+  cursor:pointer;transition:all .15s;flex:1;text-align:center}
+.btn:hover:not(:disabled){border-color:var(--accent);color:var(--accent)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn-primary{background:linear-gradient(135deg,#00d4ff22,#00d4ff44);
+  border-color:var(--accent);color:var(--accent)}
+.btn-primary:hover:not(:disabled){background:#00d4ff33;box-shadow:0 0 12px #00d4ff33}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+
+/* Overlay */
+#overlay{position:fixed;inset:0;background:#050a0fee;display:flex;align-items:center;
+  justify-content:center;flex-direction:column;gap:16px;z-index:100}
+.overlay-title{font-size:28px;font-weight:700;color:var(--accent)}
+.overlay-sub{color:var(--muted);font-size:14px}
+.btn-start{padding:14px 36px;border-radius:8px;font-size:15px;font-weight:700;
+  border:1px solid var(--accent);background:#00d4ff18;color:var(--accent);cursor:pointer;
+  transition:all .2s;margin-top:8px}
+.btn-start:hover{background:#00d4ff33;box-shadow:0 0 20px #00d4ff44;transform:translateY(-1px)}
+.scn-selector{display:flex;gap:12px;margin-top:4px}
+.scn-card{padding:12px 18px;border-radius:8px;border:1px solid var(--border);
+  background:var(--surface2);cursor:pointer;transition:all .15s;text-align:center}
+.scn-card:hover{border-color:var(--accent);background:#00d4ff0a}
+.scn-card.selected{border-color:var(--accent);background:#00d4ff18;color:var(--accent)}
+.scn-card-name{font-weight:700;font-size:13px}
+.scn-card-desc{font-size:11px;color:var(--muted);margin-top:4px;max-width:140px}
+
+/* Health badge */
+.health-badge{padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;border:1px solid}
+.nominal{background:#00ff8818;border-color:#00ff8844;color:var(--green)}
+.degraded{background:#ffd70018;border-color:#ffd70044;color:var(--yellow)}
+.critical{background:#ff444418;border-color:#ff444444;color:var(--red)}
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- Header -->
+  <header>
+    <div class="logo"><span class="logo-icon">✈</span>AeroSense<span>ATC</span></div>
+    <span style="color:var(--muted);font-size:12px" id="scenarioName">No scenario loaded</span>
+    <div class="hdr-badges">
+      <span class="badge badge-model">gemini-2.0-flash</span>
+      <span class="badge badge-model" style="color:#a855f7;border-color:#a855f744;background:#a855f718">LangGraph · CrewAI</span>
+      <span class="badge badge-status" id="statusBadge">Idle</span>
+    </div>
+  </header>
+
+  <!-- Body -->
+  <div class="body">
+
+    <!-- Left: Phase progress + scenarios -->
+    <div class="sidebar-left">
+      <div class="side-section">
+        <div class="side-title">Scenarios</div>
+        <button class="scn-btn active" data-key="nominal" onclick="selectScenario('nominal',this)">🟢 Nominal Ops</button>
+        <button class="scn-btn" data-key="conflict" onclick="selectScenario('conflict',this)">🟡 Conflict</button>
+        <button class="scn-btn" data-key="emergency" onclick="selectScenario('emergency',this)">🔴 Emergency</button>
+      </div>
+      <div class="side-section" style="flex:1">
+        <div class="side-title">12 Phases</div>
+        <div id="phaseList"></div>
+      </div>
+      <div class="controls">
+        <button class="btn btn-primary" id="runBtn" onclick="runScenario()">▶ Run</button>
+        <button class="btn" id="resetBtn" onclick="resetDashboard()">↺</button>
+      </div>
+    </div>
+
+    <!-- Radar -->
+    <div class="radar-wrap">
+      <canvas id="radarCanvas"></canvas>
+    </div>
+
+    <!-- Right: Tabs -->
+    <div class="sidebar-right">
+      <div class="tabs">
+        <div class="tab active" onclick="switchTab('events',this)">Events</div>
+        <div class="tab" onclick="switchTab('clearances',this)">Clearances</div>
+        <div class="tab" onclick="switchTab('report',this)">Report</div>
+      </div>
+      <div class="tab-content">
+        <div class="tab-pane active" id="tab-events"></div>
+        <div class="tab-pane" id="tab-clearances"><div id="clearanceList"></div></div>
+        <div class="tab-pane" id="tab-report">
+          <div id="healthBadge" style="margin-bottom:10px"></div>
+          <div id="finalReport" style="font-size:12px;line-height:1.7;color:var(--muted)">
+            Run a scenario to see the supervisor report.
+          </div>
+          <div id="traceCount" style="margin-top:12px;font-size:11px;color:var(--muted)"></div>
+        </div>
+      </div>
+      <div class="stats-bar">
+        <div class="stat-block">
+          <div class="stat-val blue" id="statFlights">0</div>
+          <div class="stat-lbl">Flights</div>
+        </div>
+        <div class="stat-block">
+          <div class="stat-val red" id="statConflicts">0</div>
+          <div class="stat-lbl">Conflicts</div>
+        </div>
+        <div class="stat-block">
+          <div class="stat-val green" id="statClearances">0</div>
+          <div class="stat-lbl">Clearances</div>
+        </div>
+        <div class="stat-block">
+          <div class="stat-val yellow" id="statPhases">0/12</div>
+          <div class="stat-lbl">Phases</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Launch overlay -->
+<div id="overlay">
+  <div class="logo" style="font-size:24px;gap:12px">
+    <span class="logo-icon" style="font-size:32px">✈</span>
+    AeroSense<span style="color:var(--accent)">ATC</span>
+  </div>
+  <div class="overlay-sub">12-Phase Multi-Agent Air Traffic Control System</div>
+  <div class="overlay-sub" style="font-size:12px">LangGraph · CrewAI · Gemini · DO-178C</div>
+  <div class="scn-selector">
+    <div class="scn-card selected" data-key="nominal" onclick="overlaySelectScenario('nominal',this)">
+      <div class="scn-card-name">🟢 Nominal</div>
+      <div class="scn-card-desc">Standard operations, 10 flights</div>
+    </div>
+    <div class="scn-card" data-key="conflict" onclick="overlaySelectScenario('conflict',this)">
+      <div class="scn-card-name">🟡 Conflict</div>
+      <div class="scn-card-desc">Converging traffic, 12 flights</div>
+    </div>
+    <div class="scn-card" data-key="emergency" onclick="overlaySelectScenario('emergency',this)">
+      <div class="scn-card-name">🔴 Emergency</div>
+      <div class="scn-card-desc">Mayday + severe weather</div>
+    </div>
+  </div>
+  <button class="btn-start" onclick="launchScenario()">Launch Scenario</button>
+</div>
+
+<script>
+// ── State ──────────────────────────────────────────────────────────────────────
+let selectedScenario = 'nominal';
+let currentScenarioId = null;
+let ws = null;
+let flights = [];
+let conflicts = [];
+let clearanceLog = [];
+let phasesCompleted = [];
+let sweepAngle = 0;
+let animFrame = null;
+
+const PHASE_LABELS = [
+  [1,'Surveillance'],  [2,'Flight Plans'],  [3,'Sectors'],
+  [4,'Conflict Det.'], [5,'Clearances'],    [6,'Comms'],
+  [7,'Handoffs'],      [8,'Weather'],       [9,'Emergency'],
+  [10,'Flow Mgmt'],    [11,'Audit'],        [12,'Supervisor'],
+];
+
+// ── Init ───────────────────────────────────────────────────────────────────────
+buildPhaseList();
+initRadar();
+
+function buildPhaseList() {
+  const el = document.getElementById('phaseList');
+  el.innerHTML = PHASE_LABELS.map(([n, lbl]) => `
+    <div class="phase-item" id="ph-${n}">
+      <div class="phase-num pending" id="phnum-${n}">${n}</div>
+      <div class="phase-label pending" id="phlbl-${n}">${lbl}</div>
+    </div>`).join('');
+}
+
+// ── Scenario selection ─────────────────────────────────────────────────────────
+function selectScenario(key, btn) {
+  selectedScenario = key;
+  document.querySelectorAll('.scn-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function overlaySelectScenario(key, card) {
+  selectedScenario = key;
+  document.querySelectorAll('.scn-card').forEach(c => c.classList.remove('selected'));
+  card.classList.add('selected');
+}
+
+// ── Launch ─────────────────────────────────────────────────────────────────────
+async function launchScenario() {
+  document.getElementById('overlay').style.display = 'none';
+  await runScenario();
+}
+
+async function runScenario() {
+  resetDashboard();
+  setStatus('running');
+  document.getElementById('runBtn').disabled = true;
+
+  try {
+    const res = await fetch('/api/scenario/run', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({scenario_key: selectedScenario}),
+    });
+    const data = await res.json();
+    currentScenarioId = data.scenario_id;
+    document.getElementById('scenarioName').textContent = data.scenario_name;
+    connectWebSocket(data.scenario_id);
+  } catch(e) {
+    setStatus('error');
+    addEvent('error', 'system', 'Failed to start: ' + e.message);
+    document.getElementById('runBtn').disabled = false;
+  }
+}
+
+function resetDashboard() {
+  flights = []; conflicts = []; clearanceLog = []; phasesCompleted = [];
+  document.getElementById('tab-events').innerHTML = '';
+  document.getElementById('clearanceList').innerHTML = '';
+  document.getElementById('finalReport').textContent = 'Run a scenario to see the supervisor report.';
+  document.getElementById('healthBadge').innerHTML = '';
+  document.getElementById('traceCount').textContent = '';
+  updateStats(0,0,0,'0/12');
+  buildPhaseList();
+  setStatus('idle');
+  document.getElementById('runBtn').disabled = false;
+  document.getElementById('scenarioName').textContent = 'No scenario loaded';
+  if (ws) { ws.close(); ws = null; }
+}
+
+// ── WebSocket ──────────────────────────────────────────────────────────────────
+function connectWebSocket(sid) {
+  const proto = location.protocol === 'https:' ? 'wss' : 'ws';
+  ws = new WebSocket(`${proto}://${location.host}/ws/${sid}`);
+
+  ws.onmessage = (e) => {
+    const msg = JSON.parse(e.data);
+    handleMessage(msg);
+  };
+
+  ws.onerror = () => {
+    setStatus('error');
+    addEvent('error', 'ws', 'WebSocket error');
+  };
+
+  ws.onclose = () => {
+    document.getElementById('runBtn').disabled = false;
+  };
+}
+
+function handleMessage(msg) {
+  switch(msg.type) {
+    case 'snapshot':
+      phasesCompleted = msg.phases_completed || [];
+      updatePhaseUI();
+      break;
+
+    case 'phase_complete': {
+      phasesCompleted = msg.phases_completed || [];
+      updatePhaseUI();
+      const ev = msg.event || {};
+      const stats = msg.stats || {};
+      updateStats(stats.flights||0, stats.conflicts||0, stats.clearances||0,
+                  `${phasesCompleted.length}/12`);
+
+      const phName = phaseDisplayName(msg.phase);
+      addEvent('phase', phName, describeEvent(ev));
+
+      if (ev.data?.conflicts) {
+        ev.data.conflicts.forEach(c => {
+          if (c.severity === 'alert' || c.severity === 'warning')
+            addEvent('conflict', phName,
+              `Conflict: ${c.pair?.join(' ↔ ')} (${c.severity.toUpperCase()})`);
+        });
+      }
+      if (ev.data?.details) {
+        ev.data.details.forEach(c => {
+          addClearance(c.callsign, c.instruction, c.type);
+          addEvent('clearance', 'CLR', `${c.callsign}: ${c.instruction}`);
+        });
+      }
+      if (ev.data?.emergencies) {
+        ev.data.emergencies.forEach(e => {
+          addEvent('emergency', 'EMG',
+            `MAYDAY ${e.callsign} — ${e.type?.toUpperCase()} (Priority ${e.priority})`);
+        });
+      }
+      if (msg.phase === 'phase_01_surveillance' && stats.flights > 0) {
+        generateMockFlights(stats.flights);
+      }
+      break;
+    }
+
+    case 'scenario_complete': {
+      setStatus('nominal');
+      phasesCompleted = msg.phases_completed || [];
+      updatePhaseUI();
+      const s = msg.stats || {};
+      updateStats(s.flights||0, s.conflicts||0, s.clearances||0, '12/12');
+
+      document.getElementById('finalReport').textContent =
+        msg.final_report || 'System nominal — all phases complete.';
+
+      const h = msg.system_health || {};
+      document.getElementById('healthBadge').innerHTML =
+        `<span class="health-badge ${h.overall_status||'nominal'}">${(h.overall_status||'nominal').toUpperCase()}</span>`;
+
+      if (s.do178c_traces)
+        document.getElementById('traceCount').textContent =
+          `${s.do178c_traces} DO-178C trace entries logged`;
+
+      addEvent('phase', 'COMPLETE', `Scenario finished — ${phasesCompleted.length} phases`);
+      break;
+    }
+
+    case 'error':
+      setStatus('error');
+      addEvent('error', 'ERROR', msg.message);
+      break;
+  }
+}
+
+// ── Phase UI ────────────────────────────────────────────────────────────────────
+function updatePhaseUI() {
+  PHASE_LABELS.forEach(([n]) => {
+    const key = `phase_${String(n).padStart(2,'0')}`;
+    const done = phasesCompleted.includes(key);
+    const numEl = document.getElementById(`phnum-${n}`);
+    const lblEl = document.getElementById(`phlbl-${n}`);
+    if (!numEl) return;
+    if (done) {
+      numEl.className = 'phase-num done';
+      lblEl.className = 'phase-label done';
+    } else {
+      numEl.className = 'phase-num pending';
+      lblEl.className = 'phase-label pending';
+    }
+  });
+
+  // Highlight last completed as "active" briefly
+  const lastIdx = phasesCompleted.length;
+  if (lastIdx > 0 && lastIdx < 12) {
+    const n = lastIdx + 1;
+    const numEl = document.getElementById(`phnum-${n}`);
+    const lblEl = document.getElementById(`phlbl-${n}`);
+    if (numEl) { numEl.className = 'phase-num active'; lblEl.className = 'phase-label active'; }
+  }
+}
+
+// ── Radar Canvas ───────────────────────────────────────────────────────────────
+let canvas, ctx, cx, cy, radius;
+
+function initRadar() {
+  canvas = document.getElementById('radarCanvas');
+  resizeRadar();
+  window.addEventListener('resize', resizeRadar);
+  animFrame = requestAnimationFrame(drawRadar);
+}
+
+function resizeRadar() {
+  const wrap = canvas.parentElement;
+  const size = Math.min(wrap.clientWidth, wrap.clientHeight) - 40;
+  canvas.width = canvas.height = size;
+  cx = cy = size / 2;
+  radius = size / 2 - 20;
+}
+
+function generateMockFlights(count) {
+  flights = Array.from({length: count}, (_, i) => ({
+    id: i, angle: Math.random() * Math.PI * 2,
+    r: Math.random() * 0.85 * radius + 10,
+    speed: (Math.random() * 0.4 + 0.1) * (Math.random() < .5 ? 1 : -1),
+    emergency: i === 0 && selectedScenario === 'emergency',
+    conflict: i < 2 && selectedScenario === 'conflict',
+    label: ['AAL','UAL','DAL','SWA','JBU'][Math.floor(Math.random()*5)] + (100 + i*37 % 900),
+  }));
+  conflicts = selectedScenario === 'conflict' ? [{a:0, b:1}] : [];
+}
+
+function drawRadar() {
+  if (!ctx) ctx = canvas.getContext('2d');
+  const w = canvas.width;
+  ctx.clearRect(0, 0, w, w);
+
+  // Background
+  ctx.fillStyle = '#020d12';
+  ctx.beginPath(); ctx.arc(cx, cy, radius+18, 0, Math.PI*2); ctx.fill();
+
+  // Grid rings
+  [0.25, 0.5, 0.75, 1].forEach(f => {
+    ctx.beginPath(); ctx.arc(cx, cy, radius*f, 0, Math.PI*2);
+    ctx.strokeStyle = '#1a3a5c'; ctx.lineWidth = 1; ctx.stroke();
+  });
+
+  // Crosshairs
+  ctx.strokeStyle = '#1a3a5c'; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(cx, cy-radius); ctx.lineTo(cx, cy+radius); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(cx-radius, cy); ctx.lineTo(cx+radius, cy); ctx.stroke();
+
+  // Sweep beam
+  sweepAngle = (sweepAngle + 0.018) % (Math.PI * 2);
+  const grad = ctx.createConicalGradient
+    ? null
+    : (() => {
+        const g = ctx.createLinearGradient(cx, cy, cx + Math.cos(sweepAngle)*radius, cy + Math.sin(sweepAngle)*radius);
+        return g;
+      })();
+
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.rotate(sweepAngle);
+  const sweep = ctx.createLinearGradient(0, 0, radius, 0);
+  sweep.addColorStop(0, 'rgba(0,212,255,0.35)');
+  sweep.addColorStop(1, 'rgba(0,212,255,0)');
+  ctx.beginPath(); ctx.moveTo(0,0);
+  ctx.arc(0, 0, radius, -0.35, 0.35);
+  ctx.closePath();
+  ctx.fillStyle = sweep; ctx.fill();
+  ctx.restore();
+
+  // Outer ring label
+  ctx.fillStyle = '#1a3a5c'; ctx.font = '10px Consolas';
+  ctx.fillText('5NM', cx + radius*0.25 - 10, cy - 4);
+  ctx.fillText('10NM', cx + radius*0.5 - 12, cy - 4);
+  ctx.fillText('20NM', cx + radius*0.75 - 12, cy - 4);
+
+  // Conflict lines
+  conflicts.forEach(({a, b}) => {
+    if (flights[a] && flights[b]) {
+      const ax = cx + Math.cos(flights[a].angle) * flights[a].r;
+      const ay = cy + Math.sin(flights[a].angle) * flights[a].r;
+      const bx = cx + Math.cos(flights[b].angle) * flights[b].r;
+      const by = cy + Math.sin(flights[b].angle) * flights[b].r;
+      ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(bx, by);
+      ctx.strokeStyle = 'rgba(255,68,68,0.6)'; ctx.lineWidth = 1.5;
+      ctx.setLineDash([4,4]); ctx.stroke(); ctx.setLineDash([]);
+    }
+  });
+
+  // Aircraft blips
+  flights.forEach(f => {
+    f.angle += f.speed * 0.002;
+    const x = cx + Math.cos(f.angle) * f.r;
+    const y = cy + Math.sin(f.angle) * f.r;
+
+    const color = f.emergency ? '#ff8800' : f.conflict ? '#ff4444' : '#00ff88';
+
+    // Trail
+    ctx.beginPath();
+    ctx.arc(x - Math.cos(f.angle)*5, y - Math.sin(f.angle)*5, 1.5, 0, Math.PI*2);
+    ctx.fillStyle = color + '66'; ctx.fill();
+
+    // Blip
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(f.angle);
+    ctx.beginPath(); ctx.moveTo(0, -5); ctx.lineTo(3.5, 4); ctx.lineTo(-3.5, 4);
+    ctx.closePath();
+    ctx.fillStyle = color; ctx.fill();
+    ctx.restore();
+
+    // Label
+    ctx.fillStyle = color; ctx.font = '10px Consolas';
+    ctx.fillText(f.label, x + 8, y - 4);
+    if (f.emergency) ctx.fillText('▲EMRG', x + 8, y + 8);
+  });
+
+  // Center dot
+  ctx.beginPath(); ctx.arc(cx, cy, 3, 0, Math.PI*2);
+  ctx.fillStyle = var_css('--accent'); ctx.fill();
+
+  animFrame = requestAnimationFrame(drawRadar);
+}
+
+function var_css(name) {
+  return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+}
+
+// ── UI helpers ─────────────────────────────────────────────────────────────────
+function setStatus(s) {
+  const badge = document.getElementById('statusBadge');
+  const map = {idle:'Idle',running:'Running',nominal:'Nominal',degraded:'Degraded',critical:'CRITICAL',error:'Error'};
+  badge.textContent = map[s] || s;
+  badge.className = 'badge badge-status' + (s === 'running' ? ' running' : s === 'error' ? ' error' : '');
+}
+
+function updateStats(f, c, cl, ph) {
+  document.getElementById('statFlights').textContent = f;
+  document.getElementById('statConflicts').textContent = c;
+  document.getElementById('statClearances').textContent = cl;
+  document.getElementById('statPhases').textContent = ph;
+  document.getElementById('statConflicts').className = 'stat-val ' + (c > 0 ? 'red' : 'green');
+}
+
+function addEvent(type, phase, text) {
+  const pane = document.getElementById('tab-events');
+  const time = new Date().toISOString().substr(11,8) + 'Z';
+  const div = document.createElement('div');
+  div.className = `log-item ${type}`;
+  div.innerHTML = `<span class="log-time">${time}</span> <span class="log-phase">[${phase}]</span><span class="log-text"> ${text}</span>`;
+  pane.prepend(div);
+}
+
+function addClearance(cs, instr, type) {
+  const list = document.getElementById('clearanceList');
+  const div = document.createElement('div');
+  div.className = `clr-card ${type === 'emergency' ? 'emergency' : ''}`;
+  div.innerHTML = `<div class="clr-cs">${cs}</div>
+    <div class="clr-instr">${instr}</div>
+    <div class="clr-reason">${type} clearance</div>`;
+  list.prepend(div);
+}
+
+function switchTab(name, tab) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  tab.classList.add('active');
+  document.getElementById('tab-' + name).classList.add('active');
+}
+
+function phaseDisplayName(key) {
+  const n = parseInt((key.match(/\d+/) || ['0'])[0]);
+  return PHASE_LABELS.find(([num]) => num === n)?.[1] || key;
+}
+
+function describeEvent(ev) {
+  if (!ev?.data) return 'Phase complete';
+  const d = ev.data;
+  if (d.track_count !== undefined) return `Fused ${d.track_count} tracks`;
+  if (d.total !== undefined) return `Validated ${d.total} plans`;
+  if (d.assignments) return `Assigned ${Object.keys(d.assignments).length} aircraft to sectors`;
+  if (d.conflicts) return `Detected ${d.conflicts.length} conflicts`;
+  if (d.count !== undefined) return `Issued ${d.count} items`;
+  if (d.compliance) return `Audit: ${d.compliance}`;
+  if (d.status) return `System: ${d.status.toUpperCase()}`;
+  return 'Phase complete';
+}
+</script>
+</body>
+</html>
