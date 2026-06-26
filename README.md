@@ -20,12 +20,15 @@ differ only in their domain agents and which infrastructure adapters are injecte
 (ports & adapters). Full design: [`docs/superpowers/specs/2026-06-26-aeroops-platform-design.md`](docs/superpowers/specs/2026-06-26-aeroops-platform-design.md).
 Plan-review / pitched-vs-built comparison lives on the `plan-review` branch.
 
-**Milestone status:** M0 (core extraction + 56 deterministic tests) landed on `master`.
-The **M2 CDM seam** lives on branch `m2-cdm-seam` (pending merge): a leaf `cdm/`
-package modelling the FAA↔airline CDM protocol — `GroundDelayProgram` /
-`GroundStop` / `MilesInTrail` (down, flow authority) and `SubstitutionRequest` /
-`FlightIntent` / `CancellationNotice` (up, collaboration) — plus an in-memory
-transport and a `TFMProgram → CDM` translator, with 65 deterministic tests.
+**Milestone status:** **Platform complete (M0–M4)** — 232 tests, all green.
+- ✓ **M0** (56 tests): core extraction, routers, state contract → merged to `master`
+- ✓ **M1** (86 tests): evals, audit, HITL, LangSmith observability → merged to `master`
+- ✓ **M2** (65 tests): CDM seam (messages + transport + translator) → PR #1
+- ✓ **M3** (93 tests): AOC responder + e2e round-trip → PR #2, #3
+- ✓ **M4** (19 tests): distributed adapters (Kafka/Postgres/Redis + Docker) → PR #4
+- ✓ **E2E Smoke** (3 tests): full system integration proof
+
+[Full architecture guide here.](docs/ARCHITECTURE.md)
 
 ---
 
