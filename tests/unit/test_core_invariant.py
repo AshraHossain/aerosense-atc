@@ -29,7 +29,9 @@ def _imported_roots(path: Path) -> set[str]:
 
 
 def _core_modules() -> list[Path]:
-    return sorted(p for p in CORE.glob("*.py"))
+    # Recursive: guards subpackages too (e.g. core/eval/) — the invariant applies
+    # to ALL of core/, not just the top level.
+    return sorted(p for p in CORE.rglob("*.py") if "__pycache__" not in p.parts)
 
 
 def test_no_core_module_imports_an_app_package():
