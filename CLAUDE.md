@@ -53,8 +53,8 @@ The 12 phases (`agents/phase_01..phase_12`): surveillance/track-fusion → fligh
 
 ## Conventions that matter here
 
-- **Routing is deterministic and must stay that way.** Emergency/conflict bypass logic is pure Python in `core/graph.py`, not an LLM decision — it is the testable safety net. Don't move routing into agent prompts.
+- **Routing is deterministic and must stay that way.** Emergency/conflict bypass logic is pure Python in `core/routing.py` (extracted from `core/graph.py` in M0 so it's testable without importing the 12 agents or Gemini), not an LLM decision — it is the testable safety net. Don't move routing into agent prompts.
 - **Every phase writes a trace.** Use `agents/base.py`'s trace builder so the Phase 11 audit export stays complete; a phase that skips its trace breaks DO-178C-inspired traceability.
 - **`ATCState` is the integration contract.** Freeze/extend it deliberately — additive changes are safe, renames ripple across all 12 phases.
 - **`requirements.txt` vs `pyproject.toml` drift** is a known wart: the app runs on `requirements.txt` (Gemini). If you touch deps, reconcile both.
-- Tests are the current top priority — `tests/` is empty despite the safety-critical framing. The deterministic routers and `ATCState` schema are the highest-ROI things to test first (no LLM calls needed).
+- **M0 test foundation landed (56 deterministic tests).** `tests/unit/` now covers the safety-critical routers, the `ATCState` contract, the safety constants, and an import-invariant guard — all no-LLM. `tests/conftest.py` sets a dummy `GOOGLE_API_KEY` so the suite runs in CI. Next: M1 (eval harness on the 3 golden scenarios + real tracer/HITL), reusing AutoRedTeam's eval/audit/tracing modules (see `docs/superpowers/specs/2026-06-26-aerocommand-scope.md`).
