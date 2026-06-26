@@ -9,6 +9,11 @@
 - Extraction: 69% EXTRACTED · 31% INFERRED · 0% AMBIGUOUS · INFERRED: 37 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
+## Graph Freshness
+- Built from commit: `ca5798ee`
+- Run `git rev-parse HEAD` and compare to check if the graph is stale.
+- Run `graphify update .` after code changes (no API cost).
+
 ## Community Hubs (Navigation)
 - [[_COMMUNITY_Community 0|Community 0]]
 - [[_COMMUNITY_Community 1|Community 1]]
@@ -47,10 +52,10 @@
   agents/phase_12_supervisor.py → core/state.py
 - `phase_01_node()` --calls--> `call_gemini()`  [INFERRED]
   agents/phase_01_surveillance.py → agents/base.py
+- `phase_02_node()` --calls--> `call_gemini()`  [INFERRED]
+  agents/phase_02_flight_plan.py → agents/base.py
 - `phase_03_node()` --calls--> `call_gemini()`  [INFERRED]
   agents/phase_03_sector.py → agents/base.py
-- `phase_04_node()` --calls--> `call_gemini()`  [INFERRED]
-  agents/phase_04_conflict.py → agents/base.py
 
 ## Communities (45 total, 10 thin omitted)
 
@@ -72,15 +77,15 @@ Nodes (3): generate_scenario(), AeroSense ATC - Synthetic Scenario Generator Gen
 
 ### Community 4 - "Community 4"
 Cohesion: 0.4
-Nodes (4): call_gemini(), Call Gemini in JSON mode with deterministic temperature.     Returns parsed dict, phase_02_node(), Phase 02 — Flight Plan Parsing & Validation Parses ICAO flight plans and validat
+Nodes (4): make_trace(), Produce a DO-178C compliant decision trace entry.     determinism_flag=True beca, phase_11_node(), Phase 11 — Audit & Compliance (DO-178C Traceability) Consolidates all phase trac
 
 ### Community 5 - "Community 5"
 Cohesion: 0.4
-Nodes (4): emit_event(), Append a structured event to the cross-phase event bus., phase_11_node(), Phase 11 — Audit & Compliance (DO-178C Traceability) Consolidates all phase trac
+Nodes (4): emit_event(), Append a structured event to the cross-phase event bus., phase_08_node(), Phase 08 — Weather Integration Integrates weather hazards, identifies affected f
 
 ### Community 6 - "Community 6"
 Cohesion: 0.5
-Nodes (3): make_trace(), AeroSense ATC — Base Agent Utilities Shared Gemini call helper used by all 12 ph, Produce a DO-178C compliant decision trace entry.     determinism_flag=True beca
+Nodes (3): call_gemini(), AeroSense ATC — Base Agent Utilities Shared Gemini call helper used by all 12 ph, Call Gemini in JSON mode with deterministic temperature.     Returns parsed dict
 
 ## Knowledge Gaps
 - **27 isolated node(s):** `AeroSense ATC — Base Agent Utilities Shared Gemini call helper used by all 12 ph`, `Call Gemini in JSON mode with deterministic temperature.     Returns parsed dict`, `Produce a DO-178C compliant decision trace entry.     determinism_flag=True beca`, `Append a structured event to the cross-phase event bus.`, `Phase 01 — Surveillance & Track Fusion Fuses raw ADS-B and radar contacts into u` (+22 more)
@@ -90,9 +95,9 @@ Nodes (3): make_trace(), AeroSense ATC — Base Agent Utilities Shared Gemini ca
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `make_trace()` connect `Community 6` to `Community 0`, `Community 2`, `Community 4`, `Community 5`, `Community 7`, `Community 8`, `Community 9`, `Community 10`, `Community 11`, `Community 12`, `Community 13`, `Community 14`, `Community 15`?**
+- **Why does `make_trace()` connect `Community 4` to `Community 0`, `Community 2`, `Community 5`, `Community 6`, `Community 7`, `Community 8`, `Community 9`, `Community 10`, `Community 11`, `Community 12`, `Community 13`, `Community 14`, `Community 15`?**
   _High betweenness centrality (0.156) - this node is a cross-community bridge._
-- **Why does `DO178CTrace` connect `Community 0` to `Community 6`?**
+- **Why does `DO178CTrace` connect `Community 0` to `Community 4`?**
   _High betweenness centrality (0.101) - this node is a cross-community bridge._
 - **Why does `emit_event()` connect `Community 5` to `Community 2`, `Community 4`, `Community 6`, `Community 7`, `Community 8`, `Community 9`, `Community 10`, `Community 11`, `Community 12`, `Community 13`, `Community 14`, `Community 15`?**
   _High betweenness centrality (0.056) - this node is a cross-community bridge._

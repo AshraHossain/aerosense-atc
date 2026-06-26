@@ -45,7 +45,7 @@
       "source_file": "agents/base.py",
       "source_location": "L16",
       "id": "agents_base_call_gemini",
-      "community": 4,
+      "community": 6,
       "norm_label": "call_gemini()"
     },
     {
@@ -54,7 +54,7 @@
       "source_file": "agents/base.py",
       "source_location": "L46",
       "id": "agents_base_make_trace",
-      "community": 6,
+      "community": 4,
       "norm_label": "make_trace()"
     },
     {
@@ -81,7 +81,7 @@
       "source_file": "agents/base.py",
       "source_location": "L17",
       "id": "agents_base_rationale_17",
-      "community": 4,
+      "community": 6,
       "norm_label": "call gemini in json mode with deterministic temperature.     returns parsed dict"
     },
     {
@@ -90,7 +90,7 @@
       "source_file": "agents/base.py",
       "source_location": "L55",
       "id": "agents_base_rationale_55",
-      "community": 6,
+      "community": 4,
       "norm_label": "produce a do-178c compliant decision trace entry.     determinism_flag=true beca"
     },
     {
@@ -108,7 +108,7 @@
       "source_file": "agents/phase_01_surveillance.py",
       "source_location": "L1",
       "id": "agents_phase_01_surveillance_py",
-      "community": 12,
+      "community": 13,
       "norm_label": "phase_01_surveillance.py"
     },
     {
@@ -117,7 +117,7 @@
       "source_file": "agents/phase_01_surveillance.py",
       "source_location": "L32",
       "id": "agents_phase_01_surveillance_phase_01_node",
-      "community": 12,
+      "community": 13,
       "norm_label": "phase_01_node()"
     },
     {
@@ -126,7 +126,7 @@
       "source_file": "agents/phase_01_surveillance.py",
       "source_location": "L1",
       "id": "agents_phase_01_surveillance_rationale_1",
-      "community": 12,
+      "community": 13,
       "norm_label": "phase 01 \u2014 surveillance & track fusion fuses raw ads-b and radar contacts into u"
     },
     {
@@ -135,7 +135,7 @@
       "source_file": "agents/phase_02_flight_plan.py",
       "source_location": "L1",
       "id": "agents_phase_02_flight_plan_py",
-      "community": 4,
+      "community": 10,
       "norm_label": "phase_02_flight_plan.py"
     },
     {
@@ -144,7 +144,7 @@
       "source_file": "agents/phase_02_flight_plan.py",
       "source_location": "L38",
       "id": "agents_phase_02_flight_plan_phase_02_node",
-      "community": 4,
+      "community": 10,
       "norm_label": "phase_02_node()"
     },
     {
@@ -153,7 +153,7 @@
       "source_file": "agents/phase_02_flight_plan.py",
       "source_location": "L1",
       "id": "agents_phase_02_flight_plan_rationale_1",
-      "community": 4,
+      "community": 10,
       "norm_label": "phase 02 \u2014 flight plan parsing & validation parses icao flight plans and validat"
     },
     {
@@ -162,7 +162,7 @@
       "source_file": "agents/phase_03_sector.py",
       "source_location": "L1",
       "id": "agents_phase_03_sector_py",
-      "community": 8,
+      "community": 9,
       "norm_label": "phase_03_sector.py"
     },
     {
@@ -171,7 +171,7 @@
       "source_file": "agents/phase_03_sector.py",
       "source_location": "L34",
       "id": "agents_phase_03_sector_phase_03_node",
-      "community": 8,
+      "community": 9,
       "norm_label": "phase_03_node()"
     },
     {
@@ -180,7 +180,7 @@
       "source_file": "agents/phase_03_sector.py",
       "source_location": "L1",
       "id": "agents_phase_03_sector_rationale_1",
-      "community": 8,
+      "community": 9,
       "norm_label": "phase 03 \u2014 airspace sector management assigns aircraft to sectors and computes l"
     },
     {
@@ -189,7 +189,7 @@
       "source_file": "agents/phase_04_conflict.py",
       "source_location": "L1",
       "id": "agents_phase_04_conflict_py",
-      "community": 9,
+      "community": 8,
       "norm_label": "phase_04_conflict.py"
     },
     {
@@ -198,7 +198,7 @@
       "source_file": "agents/phase_04_conflict.py",
       "source_location": "L35",
       "id": "agents_phase_04_conflict_phase_04_node",
-      "community": 9,
+      "community": 8,
       "norm_label": "phase_04_node()"
     },
     {
@@ -207,7 +207,7 @@
       "source_file": "agents/phase_04_conflict.py",
       "source_location": "L1",
       "id": "agents_phase_04_conflict_rationale_1",
-      "community": 9,
+      "community": 8,
       "norm_label": "phase 04 \u2014 conflict detection & resolution advisories detects separation violati"
     },
     {
@@ -216,7 +216,7 @@
       "source_file": "agents/phase_05_clearance.py",
       "source_location": "L1",
       "id": "agents_phase_05_clearance_py",
-      "community": 10,
+      "community": 11,
       "norm_label": "phase_05_clearance.py"
     },
     {
@@ -225,7 +225,7 @@
       "source_file": "agents/phase_05_clearance.py",
       "source_location": "L36",
       "id": "agents_phase_05_clearance_phase_05_node",
-      "community": 10,
+      "community": 11,
       "norm_label": "phase_05_node()"
     },
     {
@@ -234,7 +234,7 @@
       "source_file": "agents/phase_05_clearance.py",
       "source_location": "L1",
       "id": "agents_phase_05_clearance_rationale_1",
-      "community": 10,
+      "community": 11,
       "norm_label": "phase 05 \u2014 clearance generation generates atc clearances to resolve conflicts, m"
     },
     {
@@ -297,7 +297,7 @@
       "source_file": "agents/phase_08_weather.py",
       "source_location": "L1",
       "id": "agents_phase_08_weather_py",
-      "community": 7,
+      "community": 5,
       "norm_label": "phase_08_weather.py"
     },
     {
@@ -306,7 +306,7 @@
       "source_file": "agents/phase_08_weather.py",
       "source_location": "L34",
       "id": "agents_phase_08_weather_phase_08_node",
-      "community": 7,
+      "community": 5,
       "norm_label": "phase_08_node()"
     },
     {
@@ -315,7 +315,7 @@
       "source_file": "agents/phase_08_weather.py",
       "source_location": "L1",
       "id": "agents_phase_08_weather_rationale_1",
-      "community": 7,
+      "community": 5,
       "norm_label": "phase 08 \u2014 weather integration integrates weather hazards, identifies affected f"
     },
     {
@@ -324,7 +324,7 @@
       "source_file": "agents/phase_09_emergency.py",
       "source_location": "L1",
       "id": "agents_phase_09_emergency_py",
-      "community": 11,
+      "community": 7,
       "norm_label": "phase_09_emergency.py"
     },
     {
@@ -333,7 +333,7 @@
       "source_file": "agents/phase_09_emergency.py",
       "source_location": "L40",
       "id": "agents_phase_09_emergency_phase_09_node",
-      "community": 11,
+      "community": 7,
       "norm_label": "phase_09_node()"
     },
     {
@@ -342,7 +342,7 @@
       "source_file": "agents/phase_09_emergency.py",
       "source_location": "L1",
       "id": "agents_phase_09_emergency_rationale_1",
-      "community": 11,
+      "community": 7,
       "norm_label": "phase 09 \u2014 emergency management handles mayday/pan-pan declarations, squawk 7700"
     },
     {
@@ -351,7 +351,7 @@
       "source_file": "agents/phase_10_tfm.py",
       "source_location": "L1",
       "id": "agents_phase_10_tfm_py",
-      "community": 13,
+      "community": 12,
       "norm_label": "phase_10_tfm.py"
     },
     {
@@ -360,7 +360,7 @@
       "source_file": "agents/phase_10_tfm.py",
       "source_location": "L35",
       "id": "agents_phase_10_tfm_phase_10_node",
-      "community": 13,
+      "community": 12,
       "norm_label": "phase_10_node()"
     },
     {
@@ -369,7 +369,7 @@
       "source_file": "agents/phase_10_tfm.py",
       "source_location": "L1",
       "id": "agents_phase_10_tfm_rationale_1",
-      "community": 13,
+      "community": 12,
       "norm_label": "phase 10 \u2014 traffic flow management issues ground delay programs, miles-in-trail"
     },
     {
@@ -378,7 +378,7 @@
       "source_file": "agents/phase_11_audit.py",
       "source_location": "L1",
       "id": "agents_phase_11_audit_py",
-      "community": 5,
+      "community": 4,
       "norm_label": "phase_11_audit.py"
     },
     {
@@ -387,7 +387,7 @@
       "source_file": "agents/phase_11_audit.py",
       "source_location": "L18",
       "id": "agents_phase_11_audit_phase_11_node",
-      "community": 5,
+      "community": 4,
       "norm_label": "phase_11_node()"
     },
     {
@@ -396,7 +396,7 @@
       "source_file": "agents/phase_11_audit.py",
       "source_location": "L1",
       "id": "agents_phase_11_audit_rationale_1",
-      "community": 5,
+      "community": 4,
       "norm_label": "phase 11 \u2014 audit & compliance (do-178c traceability) consolidates all phase trac"
     },
     {
@@ -1019,9 +1019,9 @@
       "source_file": "main.py",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "main_py",
-      "target": "aerosense_atc_main_main",
-      "confidence_score": 1.0
+      "target": "aerosense_atc_main_main"
     },
     {
       "relation": "contains",
@@ -1029,9 +1029,9 @@
       "source_file": "agents/base.py",
       "source_location": "L16",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "agents_base_py",
-      "target": "agents_base_call_gemini",
-      "confidence_score": 1.0
+      "target": "agents_base_call_gemini"
     },
     {
       "relation": "contains",
@@ -1039,9 +1039,9 @@
       "source_file": "agents/base.py",
       "source_location": "L46",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "agents_base_py",
-      "target": "agents_base_make_trace",
-      "confidence_score": 1.0
+      "target": "agents_base_make_trace"
     },
     {
       "relation": "contains",
@@ -1049,9 +1049,9 @@
       "source_file": "agents/base.py",
       "source_location": "L77",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "agents_base_py",
-      "target": "agents_base_emit_event",
-      "confidence_score": 1.0
+      "target": "agents_base_emit_event"
     },
     {
       "relation": "rationale_for",
@@ -1059,9 +1059,9 @@
       "source_file": "agents/base.py",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "agents_base_rationale_1",
-      "target": "agents_base_py",
-      "confidence_score": 1.0
+      "target": "agents_base_py"
     },
     {
       "relation": "rationale_for",
@@ -1069,9 +1069,9 @@
       "source_file": "agents/base.py",
       "source_location": "L17",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "agents_base_rationale_17",
-      "target": "agents_base_call_gemini",
-      "confidence_score": 1.0
+      "target": "agents_base_call_gemini"
     },
     {
       "relation": "calls",
@@ -1200,9 +1200,9 @@
       "source_file": "agents/base.py",
       "source_location": "L55",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "agents_base_rationale_55",
-      "target": "agents_base_make_trace",
-      "confidence_score": 1.0
+      "target": "agents_base_make_trace"
     },
     {
       "relation": "calls",
@@ -1353,9 +1353,9 @@
       "source_file": "agents/base.py",
       "source_location": "L78",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "agents_base_rationale_78",
-      "target": "agents_base_emit_event",
-      "confidence_score": 1.0
+      "target": "agents_base_emit_event"
     },
     {
       "relation": "calls",
@@ -1495,9 +1495,9 @@
       "source_file": "agents/phase_01_surveillance.py",
       "source_location": "L32",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "agents_phase_01_surveillance_py",
-      "target": "agents_phase_01_surveillance_phase_01_node",
-      "confidence_score": 1.0
+      "target": "agents_phase_01_surveillance_phase_01_node"
     },
     {
       "relation": "rationale_for",
@@ -1505,9 +1505,9 @@
       "source_file": "agents/phase_01_surveillance.py",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "agents_phase_01_surveillance_rationale_1",
-      "target": "agents_phase_01_surveillance_py",
-      "confidence_score": 1.0
+      "target": "agents_phase_01_surveillance_py"
     },
     {
       "relation": "contains",
@@ -1515,9 +1515,9 @@
       "source_file": "agents/phase_02_flight_plan.py",
       "source_location": "L38",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "agents_phase_02_flight_plan_py",
-      "target": "agents_phase_02_flight_plan_phase_02_node",
-      "confidence_score": 1.0
+      "target": "agents_phase_02_flight_plan_phase_02_node"
     },
     {
       "relation": "rationale_for",
@@ -1525,9 +1525,9 @@
       "source_file": "agents/phase_02_flight_plan.py",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "agents_phase_02_flight_plan_rationale_1",
-      "target": "agents_phase_02_flight_plan_py",
-      "confidence_score": 1.0
+      "target": "agents_phase_02_flight_plan_py"
     },
     {
       "relation": "contains",
@@ -1535,9 +1535,9 @@
       "source_file": "agents/phase_03_sector.py",
       "source_location": "L34",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "agents_phase_03_sector_py",
-      "target": "agents_phase_03_sector_phase_03_node",
-      "confidence_score": 1.0
+      "target": "agents_phase_03_sector_phase_03_node"
     },
     {
       "relation": "rationale_for",
@@ -1545,9 +1545,9 @@
       "source_file": "agents/phase_03_sector.py",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "agents_phase_03_sector_rationale_1",
-      "target": "agents_phase_03_sector_py",
-      "confidence_score": 1.0
+      "target": "agents_phase_03_sector_py"
     },
     {
       "relation": "contains",
@@ -1555,9 +1555,9 @@
       "source_file": "agents/phase_04_conflict.py",
       "source_location": "L35",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "agents_phase_04_conflict_py",
-      "target": "agents_phase_04_conflict_phase_04_node",
-      "confidence_score": 1.0
+      "target": "agents_phase_04_conflict_phase_04_node"
     },
     {
       "relation": "rationale_for",
@@ -1565,9 +1565,9 @@
       "source_file": "agents/phase_04_conflict.py",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "agents_phase_04_conflict_rationale_1",
-      "target": "agents_phase_04_conflict_py",
-      "confidence_score": 1.0
+      "target": "agents_phase_04_conflict_py"
     },
     {
       "relation": "contains",
@@ -1575,9 +1575,9 @@
       "source_file": "agents/phase_05_clearance.py",
       "source_location": "L36",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "agents_phase_05_clearance_py",
-      "target": "agents_phase_05_clearance_phase_05_node",
-      "confidence_score": 1.0
+      "target": "agents_phase_05_clearance_phase_05_node"
     },
     {
       "relation": "rationale_for",
@@ -1585,9 +1585,9 @@
       "source_file": "agents/phase_05_clearance.py",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "agents_phase_05_clearance_rationale_1",
-      "target": "agents_phase_05_clearance_py",
-      "confidence_score": 1.0
+      "target": "agents_phase_05_clearance_py"
     },
     {
       "relation": "contains",
@@ -1595,9 +1595,9 @@
       "source_file": "agents/phase_06_comms.py",
       "source_location": "L35",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "agents_phase_06_comms_py",
-      "target": "agents_phase_06_comms_phase_06_node",
-      "confidence_score": 1.0
+      "target": "agents_phase_06_comms_phase_06_node"
     },
     {
       "relation": "rationale_for",
@@ -1605,9 +1605,9 @@
       "source_file": "agents/phase_06_comms.py",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "agents_phase_06_comms_rationale_1",
-      "target": "agents_phase_06_comms_py",
-      "confidence_score": 1.0
+      "target": "agents_phase_06_comms_py"
     },
     {
       "relation": "contains",
@@ -1615,9 +1615,9 @@
       "source_file": "agents/phase_07_handoff.py",
       "source_location": "L35",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "agents_phase_07_handoff_py",
-      "target": "agents_phase_07_handoff_phase_07_node",
-      "confidence_score": 1.0
+      "target": "agents_phase_07_handoff_phase_07_node"
     },
     {
       "relation": "rationale_for",
@@ -1625,9 +1625,9 @@
       "source_file": "agents/phase_07_handoff.py",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "agents_phase_07_handoff_rationale_1",
-      "target": "agents_phase_07_handoff_py",
-      "confidence_score": 1.0
+      "target": "agents_phase_07_handoff_py"
     },
     {
       "relation": "contains",
@@ -1635,9 +1635,9 @@
       "source_file": "agents/phase_08_weather.py",
       "source_location": "L34",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "agents_phase_08_weather_py",
-      "target": "agents_phase_08_weather_phase_08_node",
-      "confidence_score": 1.0
+      "target": "agents_phase_08_weather_phase_08_node"
     },
     {
       "relation": "rationale_for",
@@ -1645,9 +1645,9 @@
       "source_file": "agents/phase_08_weather.py",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "agents_phase_08_weather_rationale_1",
-      "target": "agents_phase_08_weather_py",
-      "confidence_score": 1.0
+      "target": "agents_phase_08_weather_py"
     },
     {
       "relation": "contains",
@@ -1655,9 +1655,9 @@
       "source_file": "agents/phase_09_emergency.py",
       "source_location": "L40",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "agents_phase_09_emergency_py",
-      "target": "agents_phase_09_emergency_phase_09_node",
-      "confidence_score": 1.0
+      "target": "agents_phase_09_emergency_phase_09_node"
     },
     {
       "relation": "rationale_for",
@@ -1665,9 +1665,9 @@
       "source_file": "agents/phase_09_emergency.py",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "agents_phase_09_emergency_rationale_1",
-      "target": "agents_phase_09_emergency_py",
-      "confidence_score": 1.0
+      "target": "agents_phase_09_emergency_py"
     },
     {
       "relation": "contains",
@@ -1675,9 +1675,9 @@
       "source_file": "agents/phase_10_tfm.py",
       "source_location": "L35",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "agents_phase_10_tfm_py",
-      "target": "agents_phase_10_tfm_phase_10_node",
-      "confidence_score": 1.0
+      "target": "agents_phase_10_tfm_phase_10_node"
     },
     {
       "relation": "rationale_for",
@@ -1685,9 +1685,9 @@
       "source_file": "agents/phase_10_tfm.py",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "agents_phase_10_tfm_rationale_1",
-      "target": "agents_phase_10_tfm_py",
-      "confidence_score": 1.0
+      "target": "agents_phase_10_tfm_py"
     },
     {
       "relation": "contains",
@@ -1695,9 +1695,9 @@
       "source_file": "agents/phase_11_audit.py",
       "source_location": "L18",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "agents_phase_11_audit_py",
-      "target": "agents_phase_11_audit_phase_11_node",
-      "confidence_score": 1.0
+      "target": "agents_phase_11_audit_phase_11_node"
     },
     {
       "relation": "rationale_for",
@@ -1705,9 +1705,9 @@
       "source_file": "agents/phase_11_audit.py",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "agents_phase_11_audit_rationale_1",
-      "target": "agents_phase_11_audit_py",
-      "confidence_score": 1.0
+      "target": "agents_phase_11_audit_py"
     },
     {
       "relation": "contains",
@@ -1715,9 +1715,9 @@
       "source_file": "agents/phase_12_supervisor.py",
       "source_location": "L48",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "agents_phase_12_supervisor_py",
-      "target": "agents_phase_12_supervisor_run_crewai_supervisor",
-      "confidence_score": 1.0
+      "target": "agents_phase_12_supervisor_run_crewai_supervisor"
     },
     {
       "relation": "contains",
@@ -1725,9 +1725,9 @@
       "source_file": "agents/phase_12_supervisor.py",
       "source_location": "L102",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "agents_phase_12_supervisor_py",
-      "target": "agents_phase_12_supervisor_phase_12_node",
-      "confidence_score": 1.0
+      "target": "agents_phase_12_supervisor_phase_12_node"
     },
     {
       "relation": "rationale_for",
@@ -1735,9 +1735,9 @@
       "source_file": "agents/phase_12_supervisor.py",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "agents_phase_12_supervisor_rationale_1",
-      "target": "agents_phase_12_supervisor_py",
-      "confidence_score": 1.0
+      "target": "agents_phase_12_supervisor_py"
     },
     {
       "relation": "calls",
@@ -1746,9 +1746,9 @@
       "source_file": "agents/phase_12_supervisor.py",
       "source_location": "L131",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "agents_phase_12_supervisor_phase_12_node",
-      "target": "agents_phase_12_supervisor_run_crewai_supervisor",
-      "confidence_score": 1.0
+      "target": "agents_phase_12_supervisor_run_crewai_supervisor"
     },
     {
       "relation": "rationale_for",
@@ -1756,9 +1756,9 @@
       "source_file": "agents/phase_12_supervisor.py",
       "source_location": "L49",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "agents_phase_12_supervisor_rationale_49",
-      "target": "agents_phase_12_supervisor_run_crewai_supervisor",
-      "confidence_score": 1.0
+      "target": "agents_phase_12_supervisor_run_crewai_supervisor"
     },
     {
       "relation": "calls",
@@ -1777,9 +1777,9 @@
       "source_file": "core/state.py",
       "source_location": "L11",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "core_state_py",
-      "target": "core_state_position",
-      "confidence_score": 1.0
+      "target": "core_state_position"
     },
     {
       "relation": "contains",
@@ -1787,9 +1787,9 @@
       "source_file": "core/state.py",
       "source_location": "L17",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "core_state_py",
-      "target": "core_state_flighttrack",
-      "confidence_score": 1.0
+      "target": "core_state_flighttrack"
     },
     {
       "relation": "contains",
@@ -1797,9 +1797,9 @@
       "source_file": "core/state.py",
       "source_location": "L28",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "core_state_py",
-      "target": "core_state_flightplan",
-      "confidence_score": 1.0
+      "target": "core_state_flightplan"
     },
     {
       "relation": "contains",
@@ -1807,9 +1807,9 @@
       "source_file": "core/state.py",
       "source_location": "L42",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "core_state_py",
-      "target": "core_state_sector",
-      "confidence_score": 1.0
+      "target": "core_state_sector"
     },
     {
       "relation": "contains",
@@ -1817,9 +1817,9 @@
       "source_file": "core/state.py",
       "source_location": "L52",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "core_state_py",
-      "target": "core_state_conflictalert",
-      "confidence_score": 1.0
+      "target": "core_state_conflictalert"
     },
     {
       "relation": "contains",
@@ -1827,9 +1827,9 @@
       "source_file": "core/state.py",
       "source_location": "L63",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "core_state_py",
-      "target": "core_state_clearance",
-      "confidence_score": 1.0
+      "target": "core_state_clearance"
     },
     {
       "relation": "contains",
@@ -1837,9 +1837,9 @@
       "source_file": "core/state.py",
       "source_location": "L73",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "core_state_py",
-      "target": "core_state_transmission",
-      "confidence_score": 1.0
+      "target": "core_state_transmission"
     },
     {
       "relation": "contains",
@@ -1847,9 +1847,9 @@
       "source_file": "core/state.py",
       "source_location": "L82",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "core_state_py",
-      "target": "core_state_handoffinstruction",
-      "confidence_score": 1.0
+      "target": "core_state_handoffinstruction"
     },
     {
       "relation": "contains",
@@ -1857,9 +1857,9 @@
       "source_file": "core/state.py",
       "source_location": "L92",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "core_state_py",
-      "target": "core_state_weatherhazard",
-      "confidence_score": 1.0
+      "target": "core_state_weatherhazard"
     },
     {
       "relation": "contains",
@@ -1867,9 +1867,9 @@
       "source_file": "core/state.py",
       "source_location": "L102",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "core_state_py",
-      "target": "core_state_emergency",
-      "confidence_score": 1.0
+      "target": "core_state_emergency"
     },
     {
       "relation": "contains",
@@ -1877,9 +1877,9 @@
       "source_file": "core/state.py",
       "source_location": "L112",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "core_state_py",
-      "target": "core_state_tfmprogram",
-      "confidence_score": 1.0
+      "target": "core_state_tfmprogram"
     },
     {
       "relation": "contains",
@@ -1887,9 +1887,9 @@
       "source_file": "core/state.py",
       "source_location": "L121",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "core_state_py",
-      "target": "core_state_do178ctrace",
-      "confidence_score": 1.0
+      "target": "core_state_do178ctrace"
     },
     {
       "relation": "contains",
@@ -1897,9 +1897,9 @@
       "source_file": "core/state.py",
       "source_location": "L138",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "core_state_py",
-      "target": "core_state_systemhealth",
-      "confidence_score": 1.0
+      "target": "core_state_systemhealth"
     },
     {
       "relation": "contains",
@@ -1907,9 +1907,9 @@
       "source_file": "core/state.py",
       "source_location": "L147",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "core_state_py",
-      "target": "core_state_atcstate",
-      "confidence_score": 1.0
+      "target": "core_state_atcstate"
     },
     {
       "relation": "rationale_for",
@@ -1917,9 +1917,9 @@
       "source_file": "core/state.py",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "core_state_rationale_1",
-      "target": "core_state_py",
-      "confidence_score": 1.0
+      "target": "core_state_py"
     },
     {
       "relation": "inherits",
@@ -1927,9 +1927,9 @@
       "source_file": "core/state.py",
       "source_location": "L11",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "core_state_position",
-      "target": "typeddict",
-      "confidence_score": 1.0
+      "target": "typeddict"
     },
     {
       "relation": "inherits",
@@ -1937,9 +1937,9 @@
       "source_file": "core/state.py",
       "source_location": "L17",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "core_state_flighttrack",
-      "target": "typeddict",
-      "confidence_score": 1.0
+      "target": "typeddict"
     },
     {
       "relation": "inherits",
@@ -1947,9 +1947,9 @@
       "source_file": "core/state.py",
       "source_location": "L28",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "core_state_flightplan",
-      "target": "typeddict",
-      "confidence_score": 1.0
+      "target": "typeddict"
     },
     {
       "relation": "inherits",
@@ -1957,9 +1957,9 @@
       "source_file": "core/state.py",
       "source_location": "L42",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "core_state_sector",
-      "target": "typeddict",
-      "confidence_score": 1.0
+      "target": "typeddict"
     },
     {
       "relation": "inherits",
@@ -1967,9 +1967,9 @@
       "source_file": "core/state.py",
       "source_location": "L52",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "core_state_conflictalert",
-      "target": "typeddict",
-      "confidence_score": 1.0
+      "target": "typeddict"
     },
     {
       "relation": "inherits",
@@ -1977,9 +1977,9 @@
       "source_file": "core/state.py",
       "source_location": "L63",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "core_state_clearance",
-      "target": "typeddict",
-      "confidence_score": 1.0
+      "target": "typeddict"
     },
     {
       "relation": "inherits",
@@ -1987,9 +1987,9 @@
       "source_file": "core/state.py",
       "source_location": "L73",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "core_state_transmission",
-      "target": "typeddict",
-      "confidence_score": 1.0
+      "target": "typeddict"
     },
     {
       "relation": "inherits",
@@ -1997,9 +1997,9 @@
       "source_file": "core/state.py",
       "source_location": "L82",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "core_state_handoffinstruction",
-      "target": "typeddict",
-      "confidence_score": 1.0
+      "target": "typeddict"
     },
     {
       "relation": "inherits",
@@ -2007,9 +2007,9 @@
       "source_file": "core/state.py",
       "source_location": "L92",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "core_state_weatherhazard",
-      "target": "typeddict",
-      "confidence_score": 1.0
+      "target": "typeddict"
     },
     {
       "relation": "inherits",
@@ -2017,9 +2017,9 @@
       "source_file": "core/state.py",
       "source_location": "L102",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "core_state_emergency",
-      "target": "typeddict",
-      "confidence_score": 1.0
+      "target": "typeddict"
     },
     {
       "relation": "inherits",
@@ -2027,9 +2027,9 @@
       "source_file": "core/state.py",
       "source_location": "L112",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "core_state_tfmprogram",
-      "target": "typeddict",
-      "confidence_score": 1.0
+      "target": "typeddict"
     },
     {
       "relation": "inherits",
@@ -2037,9 +2037,9 @@
       "source_file": "core/state.py",
       "source_location": "L121",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "core_state_do178ctrace",
-      "target": "typeddict",
-      "confidence_score": 1.0
+      "target": "typeddict"
     },
     {
       "relation": "inherits",
@@ -2047,9 +2047,9 @@
       "source_file": "core/state.py",
       "source_location": "L138",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "core_state_systemhealth",
-      "target": "typeddict",
-      "confidence_score": 1.0
+      "target": "typeddict"
     },
     {
       "relation": "inherits",
@@ -2057,9 +2057,9 @@
       "source_file": "core/state.py",
       "source_location": "L147",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "core_state_atcstate",
-      "target": "typeddict",
-      "confidence_score": 1.0
+      "target": "typeddict"
     },
     {
       "relation": "rationale_for",
@@ -2067,9 +2067,9 @@
       "source_file": "core/state.py",
       "source_location": "L122",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "core_state_rationale_122",
-      "target": "core_state_do178ctrace",
-      "confidence_score": 1.0
+      "target": "core_state_do178ctrace"
     },
     {
       "relation": "rationale_for",
@@ -2077,9 +2077,9 @@
       "source_file": "core/config.py",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "core_config_rationale_1",
-      "target": "core_config_py",
-      "confidence_score": 1.0
+      "target": "core_config_py"
     },
     {
       "relation": "contains",
@@ -2087,9 +2087,9 @@
       "source_file": "core/graph.py",
       "source_location": "L25",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "core_graph_py",
-      "target": "core_graph_route_after_surveillance",
-      "confidence_score": 1.0
+      "target": "core_graph_route_after_surveillance"
     },
     {
       "relation": "contains",
@@ -2097,9 +2097,9 @@
       "source_file": "core/graph.py",
       "source_location": "L33",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "core_graph_py",
-      "target": "core_graph_route_after_conflict",
-      "confidence_score": 1.0
+      "target": "core_graph_route_after_conflict"
     },
     {
       "relation": "contains",
@@ -2107,9 +2107,9 @@
       "source_file": "core/graph.py",
       "source_location": "L41",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "core_graph_py",
-      "target": "core_graph_route_after_emergency",
-      "confidence_score": 1.0
+      "target": "core_graph_route_after_emergency"
     },
     {
       "relation": "contains",
@@ -2117,9 +2117,9 @@
       "source_file": "core/graph.py",
       "source_location": "L46",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "core_graph_py",
-      "target": "core_graph_route_after_supervisor",
-      "confidence_score": 1.0
+      "target": "core_graph_route_after_supervisor"
     },
     {
       "relation": "contains",
@@ -2127,9 +2127,9 @@
       "source_file": "core/graph.py",
       "source_location": "L59",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "core_graph_py",
-      "target": "core_graph_build_atc_graph",
-      "confidence_score": 1.0
+      "target": "core_graph_build_atc_graph"
     },
     {
       "relation": "rationale_for",
@@ -2137,9 +2137,9 @@
       "source_file": "core/graph.py",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "core_graph_rationale_1",
-      "target": "core_graph_py",
-      "confidence_score": 1.0
+      "target": "core_graph_py"
     },
     {
       "relation": "rationale_for",
@@ -2147,9 +2147,9 @@
       "source_file": "core/graph.py",
       "source_location": "L26",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "core_graph_rationale_26",
-      "target": "core_graph_route_after_surveillance",
-      "confidence_score": 1.0
+      "target": "core_graph_route_after_surveillance"
     },
     {
       "relation": "rationale_for",
@@ -2157,9 +2157,9 @@
       "source_file": "core/graph.py",
       "source_location": "L34",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "core_graph_rationale_34",
-      "target": "core_graph_route_after_conflict",
-      "confidence_score": 1.0
+      "target": "core_graph_route_after_conflict"
     },
     {
       "relation": "rationale_for",
@@ -2167,9 +2167,9 @@
       "source_file": "core/graph.py",
       "source_location": "L42",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "core_graph_rationale_42",
-      "target": "core_graph_route_after_emergency",
-      "confidence_score": 1.0
+      "target": "core_graph_route_after_emergency"
     },
     {
       "relation": "rationale_for",
@@ -2177,9 +2177,9 @@
       "source_file": "core/graph.py",
       "source_location": "L47",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "core_graph_rationale_47",
-      "target": "core_graph_route_after_supervisor",
-      "confidence_score": 1.0
+      "target": "core_graph_route_after_supervisor"
     },
     {
       "relation": "contains",
@@ -2187,9 +2187,9 @@
       "source_file": "simulation/scenario_generator.py",
       "source_location": "L12",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "simulation_scenario_generator_py",
-      "target": "simulation_scenario_generator_flt",
-      "confidence_score": 1.0
+      "target": "simulation_scenario_generator_flt"
     },
     {
       "relation": "contains",
@@ -2197,9 +2197,9 @@
       "source_file": "simulation/scenario_generator.py",
       "source_location": "L89",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "simulation_scenario_generator_py",
-      "target": "simulation_scenario_generator_generate_scenario",
-      "confidence_score": 1.0
+      "target": "simulation_scenario_generator_generate_scenario"
     },
     {
       "relation": "contains",
@@ -2207,9 +2207,9 @@
       "source_file": "simulation/scenario_generator.py",
       "source_location": "L141",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "simulation_scenario_generator_py",
-      "target": "simulation_scenario_generator_list_scenarios",
-      "confidence_score": 1.0
+      "target": "simulation_scenario_generator_list_scenarios"
     },
     {
       "relation": "rationale_for",
@@ -2217,9 +2217,9 @@
       "source_file": "simulation/scenario_generator.py",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "simulation_scenario_generator_rationale_1",
-      "target": "simulation_scenario_generator_py",
-      "confidence_score": 1.0
+      "target": "simulation_scenario_generator_py"
     },
     {
       "relation": "rationale_for",
@@ -2227,10 +2227,11 @@
       "source_file": "simulation/scenario_generator.py",
       "source_location": "L90",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "simulation_scenario_generator_rationale_90",
-      "target": "simulation_scenario_generator_generate_scenario",
-      "confidence_score": 1.0
+      "target": "simulation_scenario_generator_generate_scenario"
     }
   ],
-  "hyperedges": []
+  "hyperedges": [],
+  "built_at_commit": "ca5798eedcb7a86e34814e129d6d745b61db937a"
 }

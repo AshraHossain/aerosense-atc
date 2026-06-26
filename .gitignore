@@ -17,11 +17,19 @@ venv/
 graphify-out/
 __pycache__/
 *.pyc
+.graphify_ast.json
+.graphify_incremental.json
+.graphify_old.json
+.graphify_uncached.txt
 
 # Runtime data
 traces/chroma_store/
 traces/redis_store/
 traces/cache/
+traces/*.jsonl
 memory/chroma_store/
 memory/redis_store/
 memory/cache/
+
+# Capstone working notes (local-only rationale log)
+Notes.md
