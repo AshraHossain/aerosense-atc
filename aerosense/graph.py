@@ -1,6 +1,11 @@
 """
 AeroSense ATC — LangGraph Orchestration
 12-phase StateGraph with deterministic routing and emergency bypass.
+
+Lives in the `aerosense/` app package (not `core/`) because it imports the 12
+agents: per the AeroOps invariant, app code may depend on core + agents, but
+`core/` must depend on neither. The deterministic routers it wires come from
+`core.routing` (testable in isolation); this module only assembles them.
 """
 
 from langgraph.graph import StateGraph, END
@@ -25,9 +30,6 @@ from agents.phase_10_tfm           import phase_10_node
 from agents.phase_11_audit         import phase_11_node
 from agents.phase_12_supervisor    import phase_12_node
 
-
-# Routers now live in core/routing.py (imported above) so they can be tested
-# without importing the 12 agents or Gemini. Behavior is unchanged.
 
 # ── Build the graph ────────────────────────────────────────────────────────────
 

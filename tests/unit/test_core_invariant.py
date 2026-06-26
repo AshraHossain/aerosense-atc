@@ -1,22 +1,19 @@
 """Import-invariant guard (AeroOps design §2).
 
-Target invariant: `core/` depends on nobody — apps depend on core. That's what
-makes "swap the infrastructure, keep the logic" literally true. The full invariant
-isn't met yet: `core/graph.py` still imports the 12 agents (it wires them), and
-relocating that wiring into the app package is a later M0/M1 step. So this test
-locks the *leaf* modules that ARE already clean (routing/state/config) and records
-graph.py as the single known, documented exception — a tripwire that fails if a new
-app dependency creeps into a clean module."""
+The invariant: `core/` depends on nobody — apps depend on core. That one-way
+dependency is what makes "swap the infrastructure, keep the logic" literally true.
+
+As of M0 the graph wiring moved from `core/graph.py` to `aerosense/graph.py`, so
+`core/` is now a true leaf and this test enforces the FULL invariant: no module in
+`core/` may import any app package. It also checks the allowed direction holds —
+`aerosense/graph.py` imports `core` (and the agents it orchestrates)."""
 
 import ast
 from pathlib import Path
 
-CORE = Path(__file__).resolve().parents[2] / "core"
+REPO = Path(__file__).resolve().parents[2]
+CORE = REPO / "core"
 FORBIDDEN_ROOTS = {"agents", "aerosense", "aerocommand", "api", "simulation"}
-
-# Modules proven not to import any app package. graph.py is intentionally absent —
-# it imports agents today and is the known pending extraction.
-CLEAN_LEAF_MODULES = ["routing.py", "state.py", "config.py"]
 
 
 def _imported_roots(path: Path) -> set[str]:
@@ -31,29 +28,36 @@ def _imported_roots(path: Path) -> set[str]:
     return roots
 
 
-def test_clean_leaf_modules_do_not_import_app_packages():
-    for name in CLEAN_LEAF_MODULES:
-        roots = _imported_roots(CORE / name)
-        leaked = roots & FORBIDDEN_ROOTS
-        assert not leaked, f"core/{name} illegally imports app package(s): {leaked}"
+def _core_modules() -> list[Path]:
+    return sorted(p for p in CORE.glob("*.py"))
 
 
-def test_routing_only_depends_on_state_and_langgraph():
+def test_no_core_module_imports_an_app_package():
+    offenders = {}
+    for path in _core_modules():
+        leaked = _imported_roots(path) & FORBIDDEN_ROOTS
+        if leaked:
+            offenders[path.name] = leaked
+    assert not offenders, f"core/ modules illegally import app packages: {offenders}"
+
+
+def test_core_graph_no_longer_lives_in_core():
+    # The wiring moved to aerosense/. If this file reappears, the invariant is at
+    # risk again — re-run the relocation rather than re-adding it to core.
+    assert not (CORE / "graph.py").exists()
+
+
+def test_core_has_expected_leaf_modules():
+    names = {p.name for p in _core_modules()}
+    assert {"routing.py", "state.py", "config.py"} <= names
+
+
+def test_app_graph_depends_on_core_and_agents():
+    roots = _imported_roots(REPO / "aerosense" / "graph.py")
+    assert "core" in roots, "app graph should import core (the allowed direction)"
+    assert "agents" in roots, "app graph wires the agents"
+
+
+def test_routing_module_stays_pure():
     roots = _imported_roots(CORE / "routing.py")
-    # routing may import core.state and langgraph; nothing app-level.
     assert roots & FORBIDDEN_ROOTS == set()
-
-
-def test_graph_is_the_known_documented_exception():
-    # If graph.py ever STOPS importing agents (i.e. the extraction happened),
-    # this test should be updated to fold graph.py into the clean set.
-    roots = _imported_roots(CORE / "graph.py")
-    assert "agents" in roots, (
-        "core/graph.py no longer imports agents — the app extraction may be done; "
-        "promote graph.py into CLEAN_LEAF_MODULES and tighten the invariant."
-    )
-
-
-def test_clean_leaf_modules_exist():
-    for name in CLEAN_LEAF_MODULES:
-        assert (CORE / name).exists()

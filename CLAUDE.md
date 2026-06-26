@@ -35,10 +35,10 @@ Requires **Python 3.12+** and a `GOOGLE_API_KEY` (Gemini, from https://aistudio.
 
 ## Architecture (the big picture)
 
-The system is a `StateGraph` defined in `core/graph.py`. Understanding three files explains most of it:
+The system is a `StateGraph` defined in `aerosense/graph.py` (moved here from `core/graph.py` in M0 so `core/` stays a leaf). Understanding three files explains most of it:
 
 - **`core/state.py`** — `ATCState`, the single shared dict that every phase reads from and writes back to. This is the contract; changing its shape affects all 12 agents.
-- **`core/graph.py`** — wires the 12 phase nodes and, critically, the **deterministic conditional routers**. The routing logic is pure Python (no LLM) and is the safety-critical heart of the system:
+- **`core/routing.py`** — the **deterministic conditional routers** (pure Python, no LLM): the safety-critical heart, testable in isolation. **`aerosense/graph.py`** imports these routers and wires the 12 phase nodes into the graph. The routers:
   - `route_after_surveillance` — **emergency squawk bypass**: any contact squawking 7700/7600/7500 jumps straight to Phase 09, skipping normal flow.
   - `route_after_conflict` — **alert-level conflict** escalates directly to Phase 09.
   - `route_after_emergency` — emergency handling rejoins normal flow at Phase 05 (clearance).
