@@ -31,5 +31,5 @@ memory/chroma_store/
 memory/redis_store/
 memory/cache/
 
-# Capstone working notes (local-only rationale log)
-Notes.md
+# Capstone working notes (local-only rationale log, not committed)
+Notes/
