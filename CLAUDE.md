@@ -35,10 +35,10 @@ Requires **Python 3.12+** and a `GOOGLE_API_KEY` (Gemini, from https://aistudio.
 
 ## Architecture (the big picture)
 
-The system is a `StateGraph` defined in `core/graph.py`. Understanding three files explains most of it:
+The system is a `StateGraph` defined in `aerosense/graph.py` (moved here from `core/graph.py` in M0 so `core/` stays a leaf). Understanding three files explains most of it:
 
 - **`core/state.py`** — `ATCState`, the single shared dict that every phase reads from and writes back to. This is the contract; changing its shape affects all 12 agents.
-- **`core/graph.py`** — wires the 12 phase nodes and, critically, the **deterministic conditional routers**. The routing logic is pure Python (no LLM) and is the safety-critical heart of the system:
+- **`core/routing.py`** — the **deterministic conditional routers** (pure Python, no LLM): the safety-critical heart, testable in isolation. **`aerosense/graph.py`** imports these routers and wires the 12 phase nodes into the graph. The routers:
   - `route_after_surveillance` — **emergency squawk bypass**: any contact squawking 7700/7600/7500 jumps straight to Phase 09, skipping normal flow.
   - `route_after_conflict` — **alert-level conflict** escalates directly to Phase 09.
   - `route_after_emergency` — emergency handling rejoins normal flow at Phase 05 (clearance).
@@ -53,8 +53,9 @@ The 12 phases (`agents/phase_01..phase_12`): surveillance/track-fusion → fligh
 
 ## Conventions that matter here
 
-- **Routing is deterministic and must stay that way.** Emergency/conflict bypass logic is pure Python in `core/graph.py`, not an LLM decision — it is the testable safety net. Don't move routing into agent prompts.
+- **Routing is deterministic and must stay that way.** Emergency/conflict bypass logic is pure Python in `core/routing.py` (extracted from `core/graph.py` in M0 so it's testable without importing the 12 agents or Gemini), not an LLM decision — it is the testable safety net. Don't move routing into agent prompts.
 - **Every phase writes a trace.** Use `agents/base.py`'s trace builder so the Phase 11 audit export stays complete; a phase that skips its trace breaks DO-178C-inspired traceability.
 - **`ATCState` is the integration contract.** Freeze/extend it deliberately — additive changes are safe, renames ripple across all 12 phases.
 - **`requirements.txt` vs `pyproject.toml` drift** is a known wart: the app runs on `requirements.txt` (Gemini). If you touch deps, reconcile both.
-- Tests are the current top priority — `tests/` is empty despite the safety-critical framing. The deterministic routers and `ATCState` schema are the highest-ROI things to test first (no LLM calls needed).
+- **M0 test foundation landed (56 deterministic tests).** `tests/unit/` now covers the safety-critical routers, the `ATCState` contract, the safety constants, and an import-invariant guard — all no-LLM. `tests/conftest.py` sets a dummy `GOOGLE_API_KEY` so the suite runs in CI. Next: M1 (eval harness on the 3 golden scenarios + real tracer/HITL), reusing AutoRedTeam's eval/audit/tracing modules (see `docs/superpowers/specs/2026-06-26-aerocommand-scope.md`).
+- **`cdm/` is the seam, and a deliberate leaf (M2, branch `m2-cdm-seam`).** It models the FAA↔airline CDM protocol as validated Pydantic messages (down: GDP/GroundStop/MilesInTrail; up: Substitution/FlightIntent/Cancellation), with an in-memory transport and `tfm_to_cdm()`. It imports only stdlib + Pydantic — **never `core/` or either app** — so translation takes plain dicts (e.g. an `ATCState` `TFMProgram`), not a `core` import. Validation is intentional: the seam is a trust boundary. 65 tests in `tests/cdm/`.

@@ -1,11 +1,22 @@
 """
 AeroSense ATC — LangGraph Orchestration
 12-phase StateGraph with deterministic routing and emergency bypass.
+
+Lives in the `aerosense/` app package (not `core/`) because it imports the 12
+agents: per the AeroOps invariant, app code may depend on core + agents, but
+`core/` must depend on neither. The deterministic routers it wires come from
+`core.routing` (testable in isolation); this module only assembles them.
 """
 
 from langgraph.graph import StateGraph, END
 
 from core.state import ATCState
+from core.routing import (
+    route_after_surveillance,
+    route_after_conflict,
+    route_after_emergency,
+    route_after_supervisor,
+)
 from agents.phase_01_surveillance  import phase_01_node
 from agents.phase_02_flight_plan   import phase_02_node
 from agents.phase_03_sector        import phase_03_node
@@ -18,40 +29,6 @@ from agents.phase_09_emergency     import phase_09_node
 from agents.phase_10_tfm           import phase_10_node
 from agents.phase_11_audit         import phase_11_node
 from agents.phase_12_supervisor    import phase_12_node
-
-
-# ── Conditional routers ────────────────────────────────────────────────────────
-
-def route_after_surveillance(state: ATCState) -> str:
-    """Skip to emergency if mayday detected in raw contacts."""
-    for c in state.get("raw_contacts", []):
-        if c.get("squawk") in ("7700", "7600", "7500"):
-            return "phase_09_emergency"
-    return "phase_02_flight_plan"
-
-
-def route_after_conflict(state: ATCState) -> str:
-    """Skip directly to emergency handling if any alert-level conflict."""
-    for c in state.get("conflicts", []):
-        if c.get("severity") == "alert":
-            return "phase_09_emergency"
-    return "phase_05_clearance"
-
-
-def route_after_emergency(state: ATCState) -> str:
-    """After emergency handling, resume normal flow at clearance generation."""
-    return "phase_05_clearance"
-
-
-def route_after_supervisor(state: ATCState) -> str:
-    """
-    Supervisor can trigger a re-run of conflict detection if it finds
-    unresolved separation issues. Otherwise the graph terminates.
-    """
-    health = state.get("system_health", {})
-    if health.get("overall_status") == "critical":
-        return "phase_04_conflict"   # one re-check loop
-    return END
 
 
 # ── Build the graph ────────────────────────────────────────────────────────────

@@ -11,7 +11,7 @@ import threading
 
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 
-from core.graph import atc_app
+from aerosense.graph import atc_app
 
 router = APIRouter()
 
