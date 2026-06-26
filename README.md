@@ -1,6 +1,24 @@
 # AeroSense ATC
 
-A 12-phase multi-agent Air Traffic Control system powered by Google Gemini and LangGraph. Each phase is a dedicated AI agent that processes the shared ATC state — from raw radar contacts through to a DO-178C-compliant supervisor report — with deterministic routing and emergency bypass logic built into the graph.
+A 12-phase multi-agent Air Traffic Control system powered by Google Gemini and LangGraph. Each phase is a dedicated AI agent that processes the shared ATC state — from raw radar contacts through to a DO-178C-inspired supervisor report — with deterministic routing and emergency bypass logic built into the graph.
+
+---
+
+## Platform direction (AeroOps)
+
+AeroSense ATC is being grown into a two-app platform that mirrors the real
+FAA↔airline operating structure, connected by a **Collaborative Decision Making
+(CDM)** message seam:
+
+- **AeroSense ATC** — the air-traffic-control sector controller (FAA side): single-node,
+  LangGraph + in-memory backends.
+- **AeroCommand AOC** — the airline Operations Control Center (airline side): crew,
+  maintenance, passenger, finance, compliance; distributed Kafka/Postgres/Redis backends.
+
+Both apps share one `core/` library (agent base, evals, tracing, audit, HITL) and
+differ only in their domain agents and which infrastructure adapters are injected
+(ports & adapters). Full design: [`docs/superpowers/specs/2026-06-26-aeroops-platform-design.md`](docs/superpowers/specs/2026-06-26-aeroops-platform-design.md).
+Plan-review / pitched-vs-built comparison lives on the `plan-review` branch.
 
 ---
 
