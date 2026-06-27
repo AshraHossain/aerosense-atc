@@ -11,36 +11,43 @@ from datetime import datetime, timezone
 import google.generativeai as genai
 from core.config import MODEL_NAME, AGENT_TEMPERATURE, DO178C_CONSTRAINTS
 from core.state import DO178CTrace
+from core.tracing import get_tracer
 
 
 def call_gemini(system: str, prompt: str) -> dict:
     """
     Call Gemini in JSON mode with deterministic temperature.
     Returns parsed dict. Raises ValueError on parse failure.
+
+    Wrapped in an "llm" span. Called from inside a @traced_node-wrapped phase
+    node, so the span nests under that node's span via contextvars automatically
+    — no trace_id threading required here.
     """
-    model = genai.GenerativeModel(
-        model_name=MODEL_NAME,
-        system_instruction=system,
-        generation_config=genai.types.GenerationConfig(
-            response_mime_type="application/json",
-            temperature=AGENT_TEMPERATURE,
-            max_output_tokens=4096,
-        ),
-    )
-    response = model.generate_content(prompt)
-    raw = response.text.strip()
+    with get_tracer().span("llm.generate_content", kind="llm",
+                           attributes={"model": MODEL_NAME, "temperature": AGENT_TEMPERATURE}):
+        model = genai.GenerativeModel(
+            model_name=MODEL_NAME,
+            system_instruction=system,
+            generation_config=genai.types.GenerationConfig(
+                response_mime_type="application/json",
+                temperature=AGENT_TEMPERATURE,
+                max_output_tokens=4096,
+            ),
+        )
+        response = model.generate_content(prompt)
+        raw = response.text.strip()
 
-    # Strip accidental markdown fences
-    cleaned = re.sub(r"^```(?:json)?\s*", "", raw, flags=re.MULTILINE)
-    cleaned = re.sub(r"\s*```\s*$", "", cleaned, flags=re.MULTILINE)
+        # Strip accidental markdown fences
+        cleaned = re.sub(r"^```(?:json)?\s*", "", raw, flags=re.MULTILINE)
+        cleaned = re.sub(r"\s*```\s*$", "", cleaned, flags=re.MULTILINE)
 
-    try:
-        return json.loads(cleaned)
-    except json.JSONDecodeError:
-        m = re.search(r"\{[\s\S]*\}", cleaned)
-        if m:
-            return json.loads(m.group())
-        raise ValueError(f"Gemini returned non-JSON: {raw[:200]}")
+        try:
+            return json.loads(cleaned)
+        except json.JSONDecodeError:
+            m = re.search(r"\{[\s\S]*\}", cleaned)
+            if m:
+                return json.loads(m.group())
+            raise ValueError(f"Gemini returned non-JSON: {raw[:200]}")
 
 
 def make_trace(

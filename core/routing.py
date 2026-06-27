@@ -13,6 +13,7 @@ imports them from here.
 from langgraph.graph import END
 
 from core.state import ATCState
+from core.tracing import get_tracer
 
 # Squawk codes that signal an emergency and trigger the Phase 09 bypass.
 EMERGENCY_SQUAWKS = ("7700", "7600", "7500")  # general / radio-fail / hijack
@@ -20,22 +21,40 @@ EMERGENCY_SQUAWKS = ("7700", "7600", "7500")  # general / radio-fail / hijack
 
 def route_after_surveillance(state: ATCState) -> str:
     """Skip to emergency if a mayday squawk is detected in raw contacts."""
+    chosen = "phase_02_flight_plan"
+    matched_squawk = None
     for c in state.get("raw_contacts", []):
         if c.get("squawk") in EMERGENCY_SQUAWKS:
-            return "phase_09_emergency"
-    return "phase_02_flight_plan"
+            chosen, matched_squawk = "phase_09_emergency", c.get("squawk")
+            break
+    get_tracer().record_decision(
+        "route_after_surveillance", trace_id=state.get("scenario_id"),
+        attributes={"chosen": chosen, "matched_squawk": matched_squawk},
+    )
+    return chosen
 
 
 def route_after_conflict(state: ATCState) -> str:
     """Skip directly to emergency handling if any alert-level conflict exists."""
+    chosen = "phase_05_clearance"
+    alert_conflict_id = None
     for c in state.get("conflicts", []):
         if c.get("severity") == "alert":
-            return "phase_09_emergency"
-    return "phase_05_clearance"
+            chosen, alert_conflict_id = "phase_09_emergency", c.get("conflict_id")
+            break
+    get_tracer().record_decision(
+        "route_after_conflict", trace_id=state.get("scenario_id"),
+        attributes={"chosen": chosen, "alert_conflict_id": alert_conflict_id},
+    )
+    return chosen
 
 
 def route_after_emergency(state: ATCState) -> str:
     """After emergency handling, resume normal flow at clearance generation."""
+    get_tracer().record_decision(
+        "route_after_emergency", trace_id=state.get("scenario_id"),
+        attributes={"chosen": "phase_05_clearance"},
+    )
     return "phase_05_clearance"
 
 
@@ -43,6 +62,10 @@ def route_after_supervisor(state: ATCState) -> str:
     """Supervisor triggers one conflict re-check if system health is critical;
     otherwise the graph terminates."""
     health = state.get("system_health", {})
-    if health.get("overall_status") == "critical":
-        return "phase_04_conflict"  # one re-check loop
-    return END
+    critical = health.get("overall_status") == "critical"
+    chosen = "phase_04_conflict" if critical else "END"
+    get_tracer().record_decision(
+        "route_after_supervisor", trace_id=state.get("scenario_id"),
+        attributes={"chosen": chosen, "overall_status": health.get("overall_status")},
+    )
+    return "phase_04_conflict" if critical else END

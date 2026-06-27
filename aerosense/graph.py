@@ -17,6 +17,7 @@ from core.routing import (
     route_after_emergency,
     route_after_supervisor,
 )
+from core.tracing import traced_node
 from agents.phase_01_surveillance  import phase_01_node
 from agents.phase_02_flight_plan   import phase_02_node
 from agents.phase_03_sector        import phase_03_node
@@ -36,19 +37,21 @@ from agents.phase_12_supervisor    import phase_12_node
 def build_atc_graph() -> StateGraph:
     workflow = StateGraph(ATCState)
 
-    # Register all 12 nodes
-    workflow.add_node("phase_01_surveillance", phase_01_node)
-    workflow.add_node("phase_02_flight_plan",  phase_02_node)
-    workflow.add_node("phase_03_sector",       phase_03_node)
-    workflow.add_node("phase_04_conflict",     phase_04_node)
-    workflow.add_node("phase_05_clearance",    phase_05_node)
-    workflow.add_node("phase_06_comms",        phase_06_node)
-    workflow.add_node("phase_07_handoff",      phase_07_node)
-    workflow.add_node("phase_08_weather",      phase_08_node)
-    workflow.add_node("phase_09_emergency",    phase_09_node)
-    workflow.add_node("phase_10_tfm",          phase_10_node)
-    workflow.add_node("phase_11_audit",        phase_11_node)
-    workflow.add_node("phase_12_supervisor",   phase_12_node)
+    # Register all 12 nodes, each wrapped in a "node" span (traced_node uses
+    # state["scenario_id"] as the trace id, so every span for one scenario run —
+    # including the nested "llm" spans from call_gemini — shares one trace).
+    workflow.add_node("phase_01_surveillance", traced_node("phase_01_surveillance")(phase_01_node))
+    workflow.add_node("phase_02_flight_plan",  traced_node("phase_02_flight_plan")(phase_02_node))
+    workflow.add_node("phase_03_sector",       traced_node("phase_03_sector")(phase_03_node))
+    workflow.add_node("phase_04_conflict",     traced_node("phase_04_conflict")(phase_04_node))
+    workflow.add_node("phase_05_clearance",    traced_node("phase_05_clearance")(phase_05_node))
+    workflow.add_node("phase_06_comms",        traced_node("phase_06_comms")(phase_06_node))
+    workflow.add_node("phase_07_handoff",      traced_node("phase_07_handoff")(phase_07_node))
+    workflow.add_node("phase_08_weather",      traced_node("phase_08_weather")(phase_08_node))
+    workflow.add_node("phase_09_emergency",    traced_node("phase_09_emergency")(phase_09_node))
+    workflow.add_node("phase_10_tfm",          traced_node("phase_10_tfm")(phase_10_node))
+    workflow.add_node("phase_11_audit",        traced_node("phase_11_audit")(phase_11_node))
+    workflow.add_node("phase_12_supervisor",   traced_node("phase_12_supervisor")(phase_12_node))
 
     # Entry point
     workflow.set_entry_point("phase_01_surveillance")
