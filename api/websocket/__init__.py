@@ -33,8 +33,11 @@ def _run_graph(
     try:
         prev_event_count = len(scenario.get("events", []))
         final_state: dict | None = None
+        # atc_app now has a checkpointer (for the HITL gate), which requires a
+        # thread_id; scenario_id is already unique per run, so reuse it.
+        config = {"configurable": {"thread_id": scenario["scenario_id"]}}
 
-        for state in atc_app.stream(scenario, stream_mode="values"):
+        for state in atc_app.stream(scenario, config=config, stream_mode="values"):
             final_state = state
             events: list = state.get("events", [])
             new_events = events[prev_event_count:]
@@ -52,7 +55,19 @@ def _run_graph(
                 },
             })
 
-        if final_state:
+        # The stream ends both when the graph truly finishes AND when it pauses
+        # at the HITL gate (interrupt_before) — those are different things, and
+        # pushing "scenario_complete" for a paused run would be a lie. Check
+        # which one actually happened.
+        paused = bool(atc_app.get_state(config).next)
+
+        if paused:
+            push({
+                "type": "scenario_paused",
+                "phases_completed": final_state.get("phases_completed", []) if final_state else [],
+                "reason": "Awaiting human approval of a proposed ground_stop.",
+            })
+        elif final_state:
             health = final_state.get("system_health") or {}
             push({
                 "type": "scenario_complete",

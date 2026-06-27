@@ -13,6 +13,13 @@ from core.tracing.tracer import get_tracer
 from simulation.scenario_generator import generate_scenario
 
 
+def _invoke(scenario: dict):
+    """atc_app now carries a checkpointer (for the HITL gate), which requires a
+    thread_id in config; scenario_id is already unique per generated scenario."""
+    config = {"configurable": {"thread_id": scenario["scenario_id"]}}
+    return atc_app.invoke(scenario, config=config)
+
+
 def _mock_gemini_returning_empty_json():
     """Patch the genai model used inside agents.base.call_gemini so every phase's
     LLM call returns `{}` — every phase node tolerates missing keys via .get(...,
@@ -28,7 +35,7 @@ def _mock_gemini_returning_empty_json():
 def test_full_nominal_run_produces_a_trace():
     scenario = generate_scenario("nominal")
     with _mock_gemini_returning_empty_json():
-        atc_app.invoke(scenario)
+        _invoke(scenario)
     spans = get_tracer().spans_for(scenario["scenario_id"])
     assert len(spans) > 0
 
@@ -39,7 +46,7 @@ def test_full_nominal_run_has_a_node_span_for_every_visited_phase():
     # it — that IS the intended behavior, not a gap. Expect the other 11.
     scenario = generate_scenario("nominal")
     with _mock_gemini_returning_empty_json():
-        atc_app.invoke(scenario)
+        _invoke(scenario)
     spans = get_tracer().spans_for(scenario["scenario_id"])
     node_names = {s.name for s in spans if s.kind == "node"}
     expected = {
@@ -60,7 +67,7 @@ def test_full_nominal_run_llm_spans_cover_the_unconditional_callers():
     # rather than asserting a fixed total that depends on incidental cascading.
     scenario = generate_scenario("nominal")
     with _mock_gemini_returning_empty_json():
-        atc_app.invoke(scenario)
+        _invoke(scenario)
     spans = get_tracer().spans_for(scenario["scenario_id"])
     by_id = {s.span_id: s for s in spans}
     llm_parent_names = {
@@ -76,7 +83,7 @@ def test_full_nominal_run_llm_spans_cover_the_unconditional_callers():
 def test_llm_spans_are_parented_under_a_node_span():
     scenario = generate_scenario("nominal")
     with _mock_gemini_returning_empty_json():
-        atc_app.invoke(scenario)
+        _invoke(scenario)
     spans = get_tracer().spans_for(scenario["scenario_id"])
     by_id = {s.span_id: s for s in spans}
     for s in spans:
@@ -88,7 +95,7 @@ def test_llm_spans_are_parented_under_a_node_span():
 def test_full_run_has_decision_spans():
     scenario = generate_scenario("nominal")
     with _mock_gemini_returning_empty_json():
-        atc_app.invoke(scenario)
+        _invoke(scenario)
     spans = get_tracer().spans_for(scenario["scenario_id"])
     decisions = {s.name for s in spans if s.kind == "decision"}
     assert "route_after_surveillance" in decisions
@@ -99,7 +106,7 @@ def test_full_run_has_decision_spans():
 def test_nominal_decision_does_not_bypass_to_emergency():
     scenario = generate_scenario("nominal")
     with _mock_gemini_returning_empty_json():
-        atc_app.invoke(scenario)
+        _invoke(scenario)
     spans = get_tracer().spans_for(scenario["scenario_id"])
     surveillance_decision = next(
         s for s in spans if s.kind == "decision" and s.name == "route_after_surveillance"
@@ -110,7 +117,7 @@ def test_nominal_decision_does_not_bypass_to_emergency():
 def test_emergency_scenario_decision_records_emergency_bypass():
     scenario = generate_scenario("emergency")
     with _mock_gemini_returning_empty_json():
-        atc_app.invoke(scenario)
+        _invoke(scenario)
     spans = get_tracer().spans_for(scenario["scenario_id"])
     surveillance_decision = next(
         s for s in spans if s.kind == "decision" and s.name == "route_after_surveillance"
@@ -122,7 +129,7 @@ def test_emergency_scenario_decision_records_emergency_bypass():
 def test_emergency_scenario_has_emergency_node_span():
     scenario = generate_scenario("emergency")
     with _mock_gemini_returning_empty_json():
-        atc_app.invoke(scenario)
+        _invoke(scenario)
     spans = get_tracer().spans_for(scenario["scenario_id"])
     node_names = {s.name for s in spans if s.kind == "node"}
     assert "phase_09_emergency" in node_names
@@ -131,7 +138,7 @@ def test_emergency_scenario_has_emergency_node_span():
 def test_all_node_spans_ok_status_on_clean_run():
     scenario = generate_scenario("nominal")
     with _mock_gemini_returning_empty_json():
-        atc_app.invoke(scenario)
+        _invoke(scenario)
     spans = get_tracer().spans_for(scenario["scenario_id"])
     assert all(s.status == "ok" for s in spans)
 
@@ -139,7 +146,7 @@ def test_all_node_spans_ok_status_on_clean_run():
 def test_tree_for_scenario_has_root_nodes():
     scenario = generate_scenario("nominal")
     with _mock_gemini_returning_empty_json():
-        atc_app.invoke(scenario)
+        _invoke(scenario)
     tree = get_tracer().tree_for(scenario["scenario_id"])
     assert len(tree) > 0
     assert tree[0]["kind"] == "node"
@@ -149,8 +156,8 @@ def test_two_scenarios_do_not_share_spans():
     s1 = generate_scenario("nominal")
     s2 = generate_scenario("nominal")
     with _mock_gemini_returning_empty_json():
-        atc_app.invoke(s1)
-        atc_app.invoke(s2)
+        _invoke(s1)
+        _invoke(s2)
     spans1 = get_tracer().spans_for(s1["scenario_id"])
     spans2 = get_tracer().spans_for(s2["scenario_id"])
     ids1 = {s.span_id for s in spans1}

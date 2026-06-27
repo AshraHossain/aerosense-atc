@@ -8,14 +8,17 @@ agents: per the AeroOps invariant, app code may depend on core + agents, but
 `core.routing` (testable in isolation); this module only assembles them.
 """
 
+from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import StateGraph, END
 
+from core.hitl import hitl_gate_node
 from core.state import ATCState
 from core.routing import (
     route_after_surveillance,
     route_after_conflict,
     route_after_emergency,
     route_after_supervisor,
+    route_after_tfm,
 )
 from core.tracing import traced_node
 from agents.phase_01_surveillance  import phase_01_node
@@ -52,6 +55,7 @@ def build_atc_graph() -> StateGraph:
     workflow.add_node("phase_10_tfm",          traced_node("phase_10_tfm")(phase_10_node))
     workflow.add_node("phase_11_audit",        traced_node("phase_11_audit")(phase_11_node))
     workflow.add_node("phase_12_supervisor",   traced_node("phase_12_supervisor")(phase_12_node))
+    workflow.add_node("hitl_gate",             traced_node("hitl_gate")(hitl_gate_node))
 
     # Entry point
     workflow.set_entry_point("phase_01_surveillance")
@@ -87,13 +91,21 @@ def build_atc_graph() -> StateGraph:
         {"phase_05_clearance": "phase_05_clearance"},
     )
 
-    # Linear: phases 5 → 6 → 7 → 8 → 10 → 11 → 12
+    # Linear: phases 5 → 6 → 7 → 8 → 10
     workflow.add_edge("phase_05_clearance", "phase_06_comms")
     workflow.add_edge("phase_06_comms",     "phase_07_handoff")
     workflow.add_edge("phase_07_handoff",   "phase_08_weather")
     workflow.add_edge("phase_08_weather",   "phase_10_tfm")
-    workflow.add_edge("phase_10_tfm",       "phase_11_audit")
-    workflow.add_edge("phase_11_audit",     "phase_12_supervisor")
+
+    # Conditional: an active ground_stop (the most disruptive TFM action) pauses
+    # for human approval before Phase 11/12 see it; everything else proceeds.
+    workflow.add_conditional_edges(
+        "phase_10_tfm",
+        route_after_tfm,
+        {"hitl_gate": "hitl_gate", "phase_11_audit": "phase_11_audit"},
+    )
+    workflow.add_edge("hitl_gate",      "phase_11_audit")
+    workflow.add_edge("phase_11_audit", "phase_12_supervisor")
 
     # Conditional: supervisor can loop back to conflict check or terminate
     workflow.add_conditional_edges(
@@ -108,5 +120,14 @@ def build_atc_graph() -> StateGraph:
     return workflow
 
 
-# Compiled app — import this in main.py and agent tests
-atc_app = build_atc_graph().compile()
+# Process-wide checkpointer. There is only one compile() call site (this module
+# is imported once), so — unlike a multi-route API where fire and resume might
+# each build a fresh graph — there's no risk of two MemorySavers existing for the
+# same run; this one instance is all any caller ever sees as `atc_app`.
+_CHECKPOINTER = MemorySaver()
+
+# Compiled app — import this in main.py and agent tests. interrupt_before pauses
+# the graph the moment it would run hitl_gate (i.e. only when route_after_tfm
+# chose it); every other scenario completes in a single invoke()/stream() call
+# exactly as before this gate existed.
+atc_app = build_atc_graph().compile(checkpointer=_CHECKPOINTER, interrupt_before=["hitl_gate"])
