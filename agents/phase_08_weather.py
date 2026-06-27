@@ -4,13 +4,10 @@ Integrates weather hazards, identifies affected flights, and recommends reroutes
 """
 
 from core.state import ATCState, WeatherHazard
+from core.prompts import get_prompt
 from agents.base import call_gemini, make_trace, emit_event
 
-SYSTEM = """You are an ATC Weather Integration Agent.
-Analyze weather hazards against active flight routes.
-Determine which flights are affected and recommend deviations.
-Severity: light (no action), moderate (pilot advisory), severe (mandatory reroute).
-Output only valid JSON."""
+SYSTEM = get_prompt("phase_08.system").template
 
 SCHEMA = """{
   "weather_hazards": [

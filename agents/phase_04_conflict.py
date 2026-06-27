@@ -5,15 +5,10 @@ Detects separation violations and classifies severity per ICAO Doc 4444.
 
 from core.state import ATCState, ConflictAlert
 from core.config import MIN_HORIZONTAL_SEP_NM, MIN_VERTICAL_SEP_FT, CONFLICT_LOOKAHEAD_MIN
+from core.prompts import get_prompt
 from agents.base import call_gemini, make_trace, emit_event
 
-SYSTEM = """You are an ATC Conflict Detection System.
-Analyze flight tracks to detect separation violations within the lookahead window.
-Severity levels:
-  - advisory: >3 NM / >500 ft but within standard separation
-  - warning:  2-3 NM / 500-1000 ft — approaching minimum separation
-  - alert:    <2 NM / <500 ft — imminent loss of separation (IMMEDIATE ACTION required)
-Output only valid JSON. Never miss an alert-level conflict."""
+SYSTEM = get_prompt("phase_04.system").template
 
 SCHEMA = """{
   "conflicts": [

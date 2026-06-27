@@ -146,11 +146,9 @@ def test_routers_are_pure_no_state_mutation():
     route_after_supervisor(state)
     assert repr(state) == snapshot  # routers must not mutate the shared state
 
-
-def test_routing_module_does_not_import_agents():
-    import sys
-    import core.routing  # noqa: F401
-    # Importing routing must not have pulled in the agent package or genai.
-    assert "agents" not in sys.modules or not any(
-        m.startswith("agents.phase_") for m in sys.modules
-    )
+# NOTE: the import-cleanliness check for core.routing lives in
+# test_core_invariant.py, using static AST analysis. An earlier sys.modules-based
+# version of that check lived here, but sys.modules is shared mutable state across
+# the whole pytest process — once any OTHER test file imports an agents.phase_*
+# module (e.g. test_prompts.py), that check produces a false failure regardless of
+# what core.routing itself imports. AST parsing doesn't have that problem.

@@ -4,13 +4,10 @@ Fuses raw ADS-B and radar contacts into unified flight tracks.
 """
 
 from core.state import ATCState, FlightTrack, Position
+from core.prompts import get_prompt
 from agents.base import call_gemini, make_trace, emit_event
 
-SYSTEM = """You are an ATC Surveillance Processor.
-Fuse raw radar/ADS-B contacts into clean, unified flight tracks.
-Deduplicate multi-source contacts for the same aircraft.
-Assess track quality based on source count and signal strength.
-Output only valid JSON."""
+SYSTEM = get_prompt("phase_01.system").template
 
 SCHEMA = """{
   "flights": [

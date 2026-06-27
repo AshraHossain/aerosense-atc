@@ -6,16 +6,10 @@ when sector loads exceed capacity thresholds.
 
 from core.state import ATCState, TFMProgram
 from core.config import SECTOR_OVERLOAD_PCT
+from core.prompts import get_prompt
 from agents.base import call_gemini, make_trace, emit_event
 
-SYSTEM = """You are an ATC Traffic Flow Management (TFM) Specialist.
-Analyze sector loads and issue flow control programs to prevent overloads.
-Program types:
-  - gdp (Ground Delay Program): Delay departures at origin airports
-  - miles_in_trail: Spacing requirement (e.g., 15 MIT on J146)
-  - ground_stop: Stop all departures to a fix/airport (last resort)
-Use the minimum intervention necessary. Prefer MIT over GDP over ground_stop.
-Output only valid JSON."""
+SYSTEM = get_prompt("phase_10.system").template
 
 SCHEMA = """{
   "tfm_programs": [

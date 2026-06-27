@@ -6,16 +6,10 @@ DO-178C constraint: no simultaneous crossing clearances to conflicting pairs.
 
 from core.state import ATCState, Clearance
 from core.config import DO178C_CONSTRAINTS
+from core.prompts import get_prompt
 from agents.base import call_gemini, make_trace, emit_event
 
-SYSTEM = """You are an ATC Clearance Generation Agent.
-Generate the minimum necessary clearances to resolve all active conflicts.
-Rules (DO-178C SEP constraints):
-1. Never issue simultaneous crossing clearances to conflicting aircraft.
-2. Prefer altitude changes over heading changes when possible.
-3. Each clearance must explicitly reference the conflict it resolves.
-4. Clearances must maintain ≥5 NM / ≥1000 ft separation after execution.
-Output only valid JSON."""
+SYSTEM = get_prompt("phase_05.system").template
 
 SCHEMA = """{
   "clearances": [

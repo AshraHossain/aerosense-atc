@@ -4,16 +4,10 @@ Parses ICAO flight plans and validates routes, altitudes, and speeds.
 """
 
 from core.state import ATCState, FlightPlan
+from core.prompts import get_prompt
 from agents.base import call_gemini, make_trace, emit_event
 
-SYSTEM = """You are an ATC Flight Plan Analyst.
-Parse and validate ICAO flight plans. Check for:
-- Valid origin/destination ICAO codes
-- Feasible route waypoints
-- Altitude within aircraft performance envelope
-- Filed speed appropriate for aircraft type
-Flag any anomalies in validation_notes.
-Output only valid JSON."""
+SYSTEM = get_prompt("phase_02.system").template
 
 SCHEMA = """{
   "flight_plans": {

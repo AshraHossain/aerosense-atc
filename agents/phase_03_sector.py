@@ -5,13 +5,10 @@ Assigns aircraft to sectors and computes load metrics.
 
 from core.state import ATCState, Sector
 from core.config import SECTORS, SECTOR_OVERLOAD_PCT
+from core.prompts import get_prompt
 from agents.base import call_gemini, make_trace, emit_event
 
-SYSTEM = """You are an ATC Sector Manager.
-Assign each aircraft to the correct airspace sector based on altitude and position.
-Compute sector load percentages. Flag overloaded sectors.
-Sectors: EAST (10k-18k ft), WEST (10k-18k ft), HIGH (18k-45k ft), APCH (0-10k ft).
-Output only valid JSON."""
+SYSTEM = get_prompt("phase_03.system").template
 
 SCHEMA = """{
   "sector_assignments": {"AAL123": "HIGH", "UAL456": "EAST"},

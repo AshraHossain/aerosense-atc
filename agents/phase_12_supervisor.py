@@ -5,6 +5,7 @@ Uses a CrewAI Crew with two specialist agents: Validator and Reporter.
 """
 
 from core.state import ATCState, SystemHealth
+from core.prompts import get_prompt
 from agents.base import call_gemini, make_trace, emit_event
 
 # CrewAI imports — used here for the multi-agent crew pattern
@@ -18,14 +19,7 @@ except ImportError:
 
 import os
 
-SYSTEM = """You are the ATC Supervisor Meta-Agent.
-Review all outputs from Phases 01-11 and:
-1. Verify no unresolved conflicts remain
-2. Confirm all emergencies are handled
-3. Check sector loads are within bounds
-4. Assess overall system health
-5. Write an executive summary for the watch supervisor
-Output only valid JSON."""
+SYSTEM = get_prompt("phase_12.system").template
 
 SCHEMA = """{
   "system_health": {

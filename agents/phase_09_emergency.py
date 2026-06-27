@@ -7,17 +7,10 @@ DO-178C EMG-001: Emergency aircraft given absolute priority.
 from datetime import datetime, timezone
 from core.state import ATCState, Emergency
 from core.config import DO178C_CONSTRAINTS
+from core.prompts import get_prompt
 from agents.base import call_gemini, make_trace, emit_event
 
-SYSTEM = """You are an ATC Emergency Coordinator.
-Handle aviation emergency declarations with maximum urgency.
-Emergency types and priorities:
-  - mayday (squawk 7700): Priority 1 — immediate assistance required
-  - pan_pan:              Priority 2 — urgency, not immediate danger
-  - squawk 7500:          Priority 1 — hijack (notify authorities immediately)
-  - squawk 7600:          Priority 2 — radio failure (light signals, NORDO procedures)
-Actions: clear airspace, assign direct routing, notify crash/fire/rescue.
-Output only valid JSON."""
+SYSTEM = get_prompt("phase_09.system").template
 
 SCHEMA = """{
   "emergencies": [

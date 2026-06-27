@@ -6,17 +6,10 @@ Formats clearances into ICAO-standard phraseology radio transmissions.
 from datetime import datetime, timezone
 from core.state import ATCState, Transmission
 from core.config import FREQUENCIES
+from core.prompts import get_prompt
 from agents.base import call_gemini, make_trace, emit_event
 
-SYSTEM = """You are an ATC Radio Communications Formatter.
-Convert structured clearances into ICAO-standard ATC phraseology transmissions.
-Rules:
-- Use standard ICAO phraseology (Doc 9432)
-- Always lead with aircraft callsign
-- State the clearance clearly and unambiguously
-- Include frequency if transferring
-- Format readback confirmations where appropriate
-Output only valid JSON."""
+SYSTEM = get_prompt("phase_06.system").template
 
 SCHEMA = """{
   "transmissions": [

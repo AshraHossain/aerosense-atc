@@ -6,15 +6,10 @@ DO-178C HND-001: Receiving sector must acknowledge before transfer of control.
 
 from core.state import ATCState, HandoffInstruction
 from core.config import FREQUENCIES
+from core.prompts import get_prompt
 from agents.base import call_gemini, make_trace, emit_event
 
-SYSTEM = """You are an ATC Handoff Coordination Agent.
-Identify aircraft approaching sector boundaries and generate handoff instructions.
-A handoff is required when:
-- Aircraft is within 5 minutes of exiting its assigned sector
-- Aircraft is climbing/descending into a different altitude sector
-Ensure receiving sector frequency is correct and special instructions are noted.
-Output only valid JSON."""
+SYSTEM = get_prompt("phase_07.system").template
 
 SCHEMA = """{
   "handoffs": [
