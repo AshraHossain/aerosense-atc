@@ -1,0 +1,87 @@
+version: "3.8"
+
+services:
+  # AeroSense: single-node ATC (in-memory adapters)
+  aerosense:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.aerosense
+    ports:
+      - "8000:8000"
+    environment:
+      GOOGLE_API_KEY: ${GOOGLE_API_KEY}
+      PYTHONUNBUFFERED: "1"
+    depends_on:
+      - postgres
+      - redis
+      - kafka
+
+  # AeroCommand: distributed AOC (Kafka/Postgres/Redis adapters)
+  aerocommand:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.aerocommand
+    ports:
+      - "8001:8001"
+    environment:
+      GOOGLE_API_KEY: ${GOOGLE_API_KEY}
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      POSTGRES_URL: postgresql://aerosense:password@postgres:5432/aerosense
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      PYTHONUNBUFFERED: "1"
+    depends_on:
+      - postgres
+      - redis
+      - kafka
+
+  # Kafka (message bus for CDM directives + responses)
+  kafka:
+    image: confluentinc/cp-kafka:7.6.0
+    ports:
+      - "9092:9092"
+      - "19092:19092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+    depends_on:
+      - zookeeper
+
+  # Zookeeper (coordinator for Kafka)
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.6.0
+    ports:
+      - "2181:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+
+  # Postgres (durable state store for scenarios)
+  postgres:
+    image: postgres:16-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: aerosense
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: aerosense
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  # Redis (fast cache: flight context, sector data, temp lookups)
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+volumes:
+  postgres_data:
+  redis_data:
