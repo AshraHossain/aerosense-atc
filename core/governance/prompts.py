@@ -21,7 +21,7 @@ class PromptVersion:
     name: str  # e.g., "phase_01_surveillance", "aoc_gdp_responder"
     text: str  # the full prompt text
     version: str  # semantic version (e.g., "1.0.0")
-    model: str  # model used when this prompt was created (e.g., "gemini-2.0-flash")
+    model: str  # model used when this prompt was created (e.g., "gemini-2.5-flash")
     created_at: str  # ISO timestamp
     checksum: str = field(default="")  # SHA256 of the prompt text
 
@@ -40,7 +40,7 @@ class PromptLockfile:
     re-run against all prompts to catch regressions.
     """
 
-    model: str  # e.g., "gemini-2.0-flash"
+    model: str  # e.g., "gemini-2.5-flash"
     model_version: str  # e.g., "2.0"
     lockfile_version: str  # e.g., "1.0.0" — bumped when any prompt changes
     created_at: str

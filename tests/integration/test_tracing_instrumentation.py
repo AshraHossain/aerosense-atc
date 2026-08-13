@@ -27,9 +27,9 @@ def _mock_gemini_returning_empty_json():
     without a real Gemini call."""
     mock_response = MagicMock()
     mock_response.text = "{}"
-    mock_model = MagicMock()
-    mock_model.generate_content.return_value = mock_response
-    return patch("agents.base.genai.GenerativeModel", return_value=mock_model)
+    mock_client = MagicMock()
+    mock_client.models.generate_content.return_value = mock_response
+    return patch("agents.base.get_client", return_value=mock_client)
 
 
 def test_full_nominal_run_produces_a_trace():

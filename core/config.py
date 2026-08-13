@@ -3,8 +3,10 @@ AeroSense ATC — Global Configuration
 """
 
 import os
+from functools import lru_cache
+from typing import Any
+
 from dotenv import load_dotenv
-import google.generativeai as genai
 
 load_dotenv()
 
@@ -13,9 +15,27 @@ GOOGLE_API_KEY = os.environ.get("GOOGLE_API_KEY", "")
 if not GOOGLE_API_KEY:
     raise RuntimeError("GOOGLE_API_KEY environment variable is required.")
 
-genai.configure(api_key=GOOGLE_API_KEY)
+# gemini-2.0-flash carries a published shutdown date (2026-06-01) and the
+# google-generativeai SDK it was used through reached end of life. Both were
+# replaced on 2026-08-12; see MIGRATION note in README.
+MODEL_NAME = "gemini-2.5-flash"
 
-MODEL_NAME = "gemini-2.0-flash"
+
+@lru_cache(maxsize=1)
+def get_client() -> Any:
+    """Return the shared Gemini client.
+
+    The google-genai SDK has no module-level ``configure()``; authentication
+    lives on a Client instance that is passed a model on every call. Built
+    lazily and cached so importing this module for its safety constants does
+    not construct a network client, and so tests can clear the cache.
+
+    Returns:
+        A ``google.genai.Client`` authenticated with ``GOOGLE_API_KEY``.
+    """
+    from google import genai
+
+    return genai.Client(api_key=GOOGLE_API_KEY)
 
 # Low temperature for determinism — critical for DO-178C compliance
 AGENT_TEMPERATURE = 0.1

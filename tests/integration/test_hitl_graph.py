@@ -36,17 +36,26 @@ _RESPONSES_TRIGGERING_GATE = {
 
 
 def _mock_gemini_keyed_by_system(responses: dict[str, str]):
-    def factory(**kwargs):
-        system = kwargs.get("system_instruction") or ""
+    """Route a canned JSON response by matching the phase's system prompt.
+
+    Under google-genai the system prompt is no longer a GenerativeModel
+    kwarg -- it rides inside the per-request GenerateContentConfig -- so the
+    match reads config.system_instruction rather than a top-level kwarg.
+    """
+
+    def generate_content(**kwargs):
+        config = kwargs.get("config")
+        system = getattr(config, "system_instruction", "") or ""
         json_text = "{}"
         for key, text in responses.items():
             if key in system:
                 json_text = text
                 break
-        model = MagicMock()
-        model.generate_content.return_value = MagicMock(text=json_text)
-        return model
-    return patch("agents.base.genai.GenerativeModel", side_effect=factory)
+        return MagicMock(text=json_text)
+
+    mock_client = MagicMock()
+    mock_client.models.generate_content.side_effect = generate_content
+    return patch("agents.base.get_client", return_value=mock_client)
 
 
 def _run_to_gate(scenario_id_suffix: str):
@@ -112,12 +121,10 @@ def test_scenario_without_ground_stop_never_pauses():
     scenario["scenario_id"] = f"{scenario['scenario_id']}-no-gate"
     config = {"configurable": {"thread_id": scenario["scenario_id"]}}
 
-    def factory(**kwargs):
-        model = MagicMock()
-        model.generate_content.return_value = MagicMock(text="{}")
-        return model
+    mock_client = MagicMock()
+    mock_client.models.generate_content.return_value = MagicMock(text="{}")
 
-    with patch("agents.base.genai.GenerativeModel", side_effect=factory):
+    with patch("agents.base.get_client", return_value=mock_client):
         final = atc_app.invoke(scenario, config=config)
 
     assert "phase_12" in final["phases_completed"]

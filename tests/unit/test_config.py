@@ -31,7 +31,7 @@ def test_agent_temperature_is_low_for_determinism():
 
 
 def test_model_is_gemini_flash():
-    assert config.MODEL_NAME == "gemini-2.0-flash"
+    assert config.MODEL_NAME == "gemini-2.5-flash"
 
 
 def test_four_sectors_defined():

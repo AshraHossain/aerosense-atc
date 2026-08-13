@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-AeroSense ATC is a 12-phase multi-agent Air Traffic Control pipeline built on **LangGraph** with **Google Gemini** (`gemini-2.0-flash`) as the model for every agent. A single scenario (raw ADS-B/radar contacts) enters at Phase 01 and propagates through all 12 phases over a shared `ATCState`, ending in a DO-178C-inspired audit trace and a watch-supervisor brief. The graph is compiled once at import time and reused for every scenario.
+AeroSense ATC is a 12-phase multi-agent Air Traffic Control pipeline built on **LangGraph** with **Google Gemini** (`gemini-2.5-flash`) as the model for every agent. A single scenario (raw ADS-B/radar contacts) enters at Phase 01 and propagates through all 12 phases over a shared `ATCState`, ending in a DO-178C-inspired audit trace and a watch-supervisor brief. The graph is compiled once at import time and reused for every scenario.
 
 > A platform refactor is planned (shared `core/` + two apps `aerosense/` ATC and `aerocommand/` AOC connected by a CDM message seam). The committed design lives in `docs/superpowers/specs/`. Until milestones land, the structure below is the live code.
 
@@ -18,10 +18,10 @@ start.bat
 
 # Install deps — requirements.txt is the source of truth for the running app
 pip install -r requirements.txt
-# (pyproject.toml + uv.lock also exist; `uv sync` works but the two lists drift —
-#  the app imports google.generativeai, which only requirements.txt pins.)
+# (pyproject.toml + uv.lock also exist; both now pin google-genai, so the
+#  previously documented drift on the Gemini SDK is resolved.)
 
-# Tests (pytest + pytest-asyncio configured; tests/ is currently EMPTY)
+# Tests (pytest + pytest-asyncio; 461 tests across 27 files)
 pytest
 pytest tests/path/to/test_file.py::test_name   # single test
 pytest -k "routing"                              # by keyword

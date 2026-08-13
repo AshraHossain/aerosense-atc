@@ -30,7 +30,7 @@ def test_prompt_version_computes_checksum():
 def test_prompt_lockfile_serializes_to_json():
     """Lockfile can be serialized and deserialized."""
     lockfile = PromptLockfile(
-        model="gemini-2.0-flash",
+        model="gemini-2.5-flash",
         model_version="2.0",
         lockfile_version="1.0.0",
         created_at="2026-06-26T12:00:00Z",
@@ -40,12 +40,12 @@ def test_prompt_lockfile_serializes_to_json():
 
     # Serialize
     json_str = lockfile.serialize()
-    assert "gemini-2.0-flash" in json_str
+    assert "gemini-2.5-flash" in json_str
     assert "phase_01" in json_str
 
     # Deserialize
     restored = PromptLockfile.deserialize(json_str)
-    assert restored.model == "gemini-2.0-flash"
+    assert restored.model == "gemini-2.5-flash"
     assert "phase_01" in restored.prompts
     assert restored.prompts["phase_01"].text == "Surveillance prompt text"
 
@@ -53,7 +53,7 @@ def test_prompt_lockfile_serializes_to_json():
 def test_lockfile_checksum_is_deterministic():
     """Two lockfiles with same prompts have same checksum."""
     lf1 = PromptLockfile(
-        model="gemini-2.0-flash",
+        model="gemini-2.5-flash",
         model_version="2.0",
         lockfile_version="1.0.0",
         created_at="2026-06-26T12:00:00Z",
@@ -61,7 +61,7 @@ def test_lockfile_checksum_is_deterministic():
     lf1.add_prompt("test", "same text", "1.0.0")
 
     lf2 = PromptLockfile(
-        model="gemini-2.0-flash",
+        model="gemini-2.5-flash",
         model_version="2.0",
         lockfile_version="1.0.0",
         created_at="2026-06-26T12:00:00Z",
@@ -79,7 +79,7 @@ def test_global_lockfile_registry(monkeypatch):
     monkeypatch.setattr(prompts_module, "_LOCKFILE", None)
 
     # Initialize
-    init_lockfile("gemini-2.0-flash", "2.0", "1.0.0")
+    init_lockfile("gemini-2.5-flash", "2.0", "1.0.0")
 
     # Register prompts
     register_prompt("phase_01", "Surveillance prompt", "1.0.0")
@@ -91,7 +91,7 @@ def test_global_lockfile_registry(monkeypatch):
 
     # Audit trail
     lockfile = get_lockfile()
-    assert lockfile.model == "gemini-2.0-flash"
+    assert lockfile.model == "gemini-2.5-flash"
     assert len(lockfile.prompts) == 2
 
 
@@ -101,7 +101,7 @@ def test_eval_baseline_locked_in_lockfile(monkeypatch):
 
     monkeypatch.setattr(prompts_module, "_LOCKFILE", None)
 
-    init_lockfile("gemini-2.0-flash", "2.0", "1.0.0")
+    init_lockfile("gemini-2.5-flash", "2.0", "1.0.0")
     register_prompt("phase_01", "test", "1.0.0")
 
     # No baseline yet
@@ -121,7 +121,7 @@ def test_unregistered_prompt_raises_error(monkeypatch):
 
     monkeypatch.setattr(prompts_module, "_LOCKFILE", None)
 
-    init_lockfile("gemini-2.0-flash", "2.0", "1.0.0")
+    init_lockfile("gemini-2.5-flash", "2.0", "1.0.0")
 
     with pytest.raises(KeyError, match="not registered"):
         get_prompt("nonexistent")

@@ -8,8 +8,7 @@ import hashlib
 import re
 from datetime import datetime, timezone
 
-import google.generativeai as genai
-from core.config import MODEL_NAME, AGENT_TEMPERATURE, DO178C_CONSTRAINTS
+from core.config import MODEL_NAME, AGENT_TEMPERATURE, DO178C_CONSTRAINTS, get_client
 from core.state import DO178CTrace
 from core.tracing import get_tracer
 
@@ -25,17 +24,21 @@ def call_gemini(system: str, prompt: str) -> dict:
     """
     with get_tracer().span("llm.generate_content", kind="llm",
                            attributes={"model": MODEL_NAME, "temperature": AGENT_TEMPERATURE}):
-        model = genai.GenerativeModel(
-            model_name=MODEL_NAME,
-            system_instruction=system,
-            generation_config=genai.types.GenerationConfig(
+        # google-genai builds no per-model object: the client is model-agnostic
+        # and the model plus its generation config ride on each request.
+        from google.genai import types
+
+        response = get_client().models.generate_content(
+            model=MODEL_NAME,
+            contents=prompt,
+            config=types.GenerateContentConfig(
+                system_instruction=system,
                 response_mime_type="application/json",
                 temperature=AGENT_TEMPERATURE,
                 max_output_tokens=4096,
             ),
         )
-        response = model.generate_content(prompt)
-        raw = response.text.strip()
+        raw = (response.text or "").strip()
 
         # Strip accidental markdown fences
         cleaned = re.sub(r"^```(?:json)?\s*", "", raw, flags=re.MULTILINE)

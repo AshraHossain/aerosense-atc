@@ -184,7 +184,7 @@ Phase 11 writes a `.jsonl` trace file to `traces/<scenario_id>_traces.jsonl` con
 ## Prerequisites
 
 - Python 3.12+
-- A Google Gemini API key with access to `gemini-2.0-flash` (paid tier recommended — the free tier has low per-day/per-minute quotas)
+- A Google Gemini API key with access to `gemini-2.5-flash` (paid tier recommended — the free tier has low per-day/per-minute quotas)
 
 ---
 
@@ -296,7 +296,7 @@ All tuneable constants live in `core/config.py`:
 
 | Constant | Default | Meaning |
 |----------|---------|---------|
-| `MODEL_NAME` | `gemini-2.0-flash` | Gemini model used by all agents |
+| `MODEL_NAME` | `gemini-2.5-flash` | Gemini model used by all agents |
 | `AGENT_TEMPERATURE` | `0.1` | Near-deterministic generation |
 | `MIN_HORIZONTAL_SEP_NM` | `5.0` | ICAO minimum radar separation |
 | `MIN_VERTICAL_SEP_FT` | `1000` | Standard vertical separation |
@@ -324,8 +324,8 @@ Airspace sectors (EAST, WEST, HIGH, APCH) and radio frequencies are also defined
 
 ## Known Issues
 
-- **`google.generativeai` is deprecated.** All agents currently use `google-generativeai`. Google has ended support for this package in favour of `google.genai`. Migration is planned.
-- **Free-tier Gemini quota** — the free tier for `gemini-2.0-flash` has very low per-minute and per-day limits. A single 12-phase run makes one API call per phase. A paid Gemini API key is recommended for development.
+- **`google.genai` is deprecated.** All agents currently use `google-genai`. Google has ended support for this package in favour of `google.genai`. Migration is planned.
+- **Free-tier Gemini quota** — the free tier for `gemini-2.5-flash` has very low per-minute and per-day limits. A single 12-phase run makes one API call per phase. A paid Gemini API key is recommended for development.
 
 ---
 
